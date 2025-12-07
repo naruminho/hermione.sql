@@ -292,8 +292,11 @@ const App: React.FC = () => {
       let rawContent = parts[0].trim();
       
       // Safety Filter: Ensure no hidden tags leaked into the suggested actions
+      // WE AGGRESSIVELY FILTER ANYTHING STARTING WITH '---' OR CONTAINING 'XP:' JUST IN CASE
       const rawOptions = parts[1] 
-        ? parts[1].trim().split('\n').filter(s => s.trim().length > 0 && !s.includes('---')) 
+        ? parts[1].trim().split('\n')
+            .map(s => s.trim())
+            .filter(s => s.length > 0 && !s.includes('---') && !s.includes('XP:') && !s.includes('UNLOCK')) 
         : [];
 
       const { cleanText, xpGained, unlockNext } = parseHiddenTags(rawContent);
