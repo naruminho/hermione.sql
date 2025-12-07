@@ -5,7 +5,9 @@ import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2 } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit } from 'lucide-react';
+
+const APP_VERSION = "v1.1"; // Increment this to verify deploys
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -151,12 +153,12 @@ const App: React.FC = () => {
   // --- LOGIC ---
 
   const handleClearHistory = () => {
-    if (confirm('Tem certeza? Isso vai apagar toda a sua conversa.')) {
+    if (confirm('Tem certeza? Isso vai apagar toda a sua conversa e progresso.')) {
       setMessages(INITIAL_MESSAGES);
       setModules(INITIAL_MODULES);
       setUserProgress({ xp: 0, level: 1, currentModuleId: 1 });
       localStorage.clear();
-      window.location.reload();
+      // We don't reload page to keep SPA feel, just reset state
     }
   };
 
@@ -281,7 +283,7 @@ const App: React.FC = () => {
           <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-2">Sua Trilha Mágica</h3>
           <div className="space-y-2">
             {modules.map((mod) => (
-              <div key={mod.id} className={`p-3 rounded-xl border transition-all ${
+              <div key={mod.id} className={`p-3 rounded-lg border transition-all ${
                 mod.active 
                   ? 'bg-purple-900/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
                   : mod.completed
@@ -289,25 +291,25 @@ const App: React.FC = () => {
                     : 'bg-slate-800/30 border-transparent opacity-60'
               }`}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className={`text-xs font-bold ${
+                  <span className={`text-[10px] font-bold ${
                       mod.active ? 'text-purple-400' : mod.completed ? 'text-emerald-400' : 'text-slate-500'
                     }`}>
                     {mod.active ? 'EM ANDAMENTO' : mod.completed ? 'COMPLETO' : 'BLOQUEADO'}
                   </span>
-                  {mod.active && <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>}
+                  {mod.active && <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></div>}
                 </div>
-                <h4 className={`font-medium text-sm ${mod.active ? 'text-slate-100' : 'text-slate-400'}`}>{mod.title}</h4>
-                <p className="text-xs text-slate-500 mt-1">{mod.subtitle}</p>
+                <h4 className={`font-medium text-xs md:text-sm ${mod.active ? 'text-slate-100' : 'text-slate-400'}`}>{mod.title}</h4>
+                <p className="text-[10px] text-slate-500 mt-0.5">{mod.subtitle}</p>
               </div>
             ))}
           </div>
         </div>
 
         {/* User Profile / Mana Bar */}
-        <div className="p-4 border-t border-slate-800 space-y-3">
-           <div className="bg-slate-800/50 rounded-xl p-3">
+        <div className="p-4 border-t border-slate-800 space-y-3 bg-slate-900">
+           <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-800">
              <div className="flex items-center gap-3 mb-3">
-               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-sm font-bold shadow-md">L</div>
+               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-slate-900">L</div>
                <div className="flex-1 min-w-0">
                  <p className="text-sm font-bold text-white truncate">Lellinha</p>
                  <p className="text-[10px] text-slate-400">Nível {userProgress.level} • {userProgress.xp} XP</p>
@@ -317,7 +319,7 @@ const App: React.FC = () => {
              {/* Mana Bar */}
              <div className="space-y-1">
                 <div className="flex justify-between text-[10px] font-medium">
-                  <span className="text-blue-300 flex items-center gap-1"><Zap size={10}/> Mana (XP)</span>
+                  <span className="text-blue-300 flex items-center gap-1"><Zap size={10}/> Mana</span>
                   <span className="text-blue-300">{Math.floor(manaPercentage)}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
@@ -329,30 +331,38 @@ const App: React.FC = () => {
              </div>
            </div>
 
-           <button 
-             onClick={handleClearHistory}
-             className="w-full flex items-center justify-center gap-2 p-2 text-xs text-red-400 hover:bg-red-950/30 rounded-lg transition-colors"
-           >
-             <Trash2 size={12} />
-             Resetar Progresso
-           </button>
+           <div className="flex items-center justify-between pt-1">
+              <span className="text-[10px] text-slate-600 flex items-center gap-1">
+                <GitCommit size={10} />
+                {APP_VERSION}
+              </span>
+              <button 
+                onClick={handleClearHistory}
+                className="flex items-center gap-1.5 text-[10px] text-red-400 hover:text-red-300 hover:bg-red-950/30 px-2 py-1 rounded transition-colors"
+                title="Apagar histórico local"
+              >
+                <Trash2 size={12} />
+                Resetar
+              </button>
+           </div>
         </div>
       </aside>
 
       {/* Main Content - Chat */}
-      <main className="flex-1 flex flex-col relative w-full">
+      <main className="flex-1 flex flex-col relative w-full h-full">
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur">
+        <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur z-20">
           <div className="flex items-center gap-2">
             <button onClick={() => setShowMobileSidebar(!showMobileSidebar)} className="p-2 hover:bg-slate-800 rounded-lg">
               <Menu size={20} />
             </button>
             <span className="font-bold">Hermione</span>
           </div>
+          <span className="text-xs text-slate-500">{APP_VERSION}</span>
         </header>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-3xl mx-auto space-y-6 pb-4">
             {messages.map(msg => (
               <div key={msg.id}>
                 <MessageBubble message={msg} />
@@ -378,7 +388,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 md:p-6 bg-slate-950 border-t border-slate-800/50">
+        <div className="p-4 md:p-6 bg-slate-950 border-t border-slate-800/50 z-20">
           <div className="max-w-3xl mx-auto">
             <InputArea onSend={handleSend} appState={appState} />
           </div>
