@@ -1,7 +1,15 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Initialize the client with the API Key from the environment
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Safe API Key retrieval that works in both Vite (process.env) and Browser (shim)
+const getApiKey = () => {
+  try {
+    return process.env.API_KEY;
+  } catch (e) {
+    return ""; // Fail gracefully if process is not defined
+  }
+};
+
+const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
 export interface GenerationResult {
   text: string;
@@ -14,6 +22,14 @@ export interface GenerationResult {
  */
 export const generateContent = async (prompt: string): Promise<GenerationResult> => {
   try {
+    const apiKey = getApiKey();
+    if (!apiKey) {
+      return { 
+        text: "", 
+        error: "API Key não encontrada. Configure o arquivo .env ou a variável de ambiente." 
+      };
+    }
+
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
