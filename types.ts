@@ -12,6 +12,8 @@ export enum AppState {
   GENERATING = 'GENERATING',
 }
 
+export type MentorType = 'hermione' | 'naru';
+
 export interface ColumnSchema {
   name: string;
   type: string;

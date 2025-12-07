@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateContent } from './services/gemini';
-import { Message, AppState, TableSchema, KnowledgeDrop, Module, UserProgress, ArchivedSession } from './types';
+import { Message, AppState, TableSchema, KnowledgeDrop, Module, UserProgress, ArchivedSession, MentorType } from './types';
 import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart } from 'lucide-react';
 
-const APP_VERSION = "v2.2";
+const APP_VERSION = "v3.0";
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -80,7 +80,6 @@ const ALL_TABLES: TableSchema[] = [
   },
 ];
 
-// DROPS now have minLevel to hide advanced content from beginners
 const INITIAL_DROPS: KnowledgeDrop[] = [
   { id: '0', title: 'O Ponto e Vírgula', description: 'Em SQL, o ; é como o "Malfeito Feito". Ele diz ao banco que seu comando acabou. Sem ele, a magia não acontece!', rarity: 'common', unlocked: true, minLevel: 1 },
   { id: '2', title: 'Cuidado com Strings', description: 'Comparar texto (Strings) é muito mais lento que comparar números. Prefira IDs sempre que der!', rarity: 'common', unlocked: false, minLevel: 1 },
@@ -124,12 +123,12 @@ const INITIAL_MESSAGES: Message[] = [
   {
     id: 'welcome',
     role: 'assistant',
-    content: "Olá Lellinha! Eu sou a **Hermione**, sua monitora de dados! 🧙‍♀️✨\n\nPreparei um currículo completo de Hogwarts para você, do Nível 1 ao 5. Vamos transformar você numa Engenheira de Dados melhor que a própria Minerva McGonagall!\n\nComeçamos pelo **Nível 1: Feitiços Básicos**. \n\nO que deseja fazer?",
+    content: "Olá Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo completo para você se tornar uma Engenheira de Dados de elite!\n\nVocê também pode escolher o **Naru** como seu monitor ali na barra lateral, se preferir alguém mais... \"xuxuu\". huahua\n\nComeçamos pelo **Nível 1**. O que deseja?",
     timestamp: Date.now(),
     suggestedActions: [
-      "Me ensine o SELECT",
-      "Para que serve um banco de dados?",
-      "Quero um desafio fácil"
+      "Começar do zero",
+      "Me dê um exemplo de SELECT",
+      "Como funcionam as Casas?"
     ]
   }
 ];
@@ -138,7 +137,8 @@ const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
   MODULES: 'lellinha_modules_v1.7',
   PROGRESS: 'lellinha_progress',
-  ARCHIVES: 'lellinha_archives'
+  ARCHIVES: 'lellinha_archives',
+  MENTOR: 'lellinha_active_mentor'
 };
 
 const App: React.FC = () => {
@@ -147,6 +147,7 @@ const App: React.FC = () => {
   const [modules, setModules] = useState<Module[]>(INITIAL_MODULES);
   const [userProgress, setUserProgress] = useState<UserProgress>({ xp: 0, level: 1, currentModuleId: 1 });
   const [archives, setArchives] = useState<ArchivedSession[]>([]);
+  const [activeMentor, setActiveMentor] = useState<MentorType>('hermione');
   
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -160,6 +161,7 @@ const App: React.FC = () => {
     const loadedModules = localStorage.getItem(STORAGE_KEYS.MODULES);
     const loadedProgress = localStorage.getItem(STORAGE_KEYS.PROGRESS);
     const loadedArchives = localStorage.getItem(STORAGE_KEYS.ARCHIVES);
+    const loadedMentor = localStorage.getItem(STORAGE_KEYS.MENTOR);
 
     if (loadedMessages) setMessages(JSON.parse(loadedMessages));
     if (loadedModules) {
@@ -174,17 +176,18 @@ const App: React.FC = () => {
     }
     if (loadedProgress) setUserProgress(JSON.parse(loadedProgress));
     if (loadedArchives) setArchives(JSON.parse(loadedArchives));
+    if (loadedMentor) setActiveMentor(loadedMentor as MentorType);
   }, []);
 
   // --- PERSISTENCE (SAVE) ---
   useEffect(() => {
-    // UPDATED: Do not save messages that are flagged as errors
     const validMessages = messages.filter(m => !m.isError);
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(validMessages));
     localStorage.setItem(STORAGE_KEYS.MODULES, JSON.stringify(modules));
     localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(userProgress));
     localStorage.setItem(STORAGE_KEYS.ARCHIVES, JSON.stringify(archives));
-  }, [messages, modules, userProgress, archives]);
+    localStorage.setItem(STORAGE_KEYS.MENTOR, activeMentor);
+  }, [messages, modules, userProgress, archives, activeMentor]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -204,7 +207,7 @@ const App: React.FC = () => {
 
     if (confirm('Deseja arquivar essa conversa na Penseira e iniciar um novo ciclo?')) {
       const currentModuleTitle = modules.find(m => m.active)?.title || "Geral";
-      const validMessages = messages.filter(m => !m.isError); // Filter errors before archiving
+      const validMessages = messages.filter(m => !m.isError);
       
       const newArchive: ArchivedSession = {
         id: Date.now().toString(),
@@ -224,7 +227,6 @@ const App: React.FC = () => {
     let xpGained = 0;
     let unlockNext = false;
 
-    // Check for XP tag
     if (cleanText.includes('---XP:')) {
       const match = cleanText.match(/---XP:(\d+)---/);
       if (match) {
@@ -233,7 +235,6 @@ const App: React.FC = () => {
       }
     }
 
-    // Check for Unlock tag
     if (cleanText.includes('---UNLOCK_NEXT---')) {
       unlockNext = true;
       cleanText = cleanText.replace('---UNLOCK_NEXT---', '');
@@ -247,12 +248,12 @@ const App: React.FC = () => {
     let prompt = text;
 
     if (text === "DUEL_MODE_REQUEST") {
-      displayContent = "⚔️ Hermione, quero um DUELO! Mande uma bateria de exercícios!";
+      displayContent = "⚔️ Quero um DUELO! Mande uma bateria de exercícios!";
       prompt = "DUEL_MODE_REQUEST";
     }
 
     if (text === "TIME_TURNER_REQUEST") {
-      displayContent = "⏳ Vira-Tempo: Hermione, revise algo que eu já aprendi.";
+      displayContent = "⏳ Vira-Tempo: Revise algo que eu já aprendi.";
       prompt = "TIME_TURNER_REQUEST";
     }
 
@@ -274,7 +275,8 @@ const App: React.FC = () => {
       .join(", ");
 
     try {
-      const result = await generateContent(prompt, newMessages, currentModule, completedModulesList);
+      // Pass the activeMentor to the service
+      const result = await generateContent(prompt, newMessages, currentModule, completedModulesList, activeMentor);
 
       if (result.error) {
         const errorMsg: Message = {
@@ -291,8 +293,6 @@ const App: React.FC = () => {
       const parts = result.text.split('---OPTIONS---');
       let rawContent = parts[0].trim();
       
-      // Safety Filter: Ensure no hidden tags leaked into the suggested actions
-      // WE AGGRESSIVELY FILTER ANYTHING STARTING WITH '---' OR CONTAINING 'XP:' JUST IN CASE
       const rawOptions = parts[1] 
         ? parts[1].trim().split('\n')
             .map(s => s.trim())
@@ -320,12 +320,9 @@ const App: React.FC = () => {
           return prev;
         });
         
-        // Update user level progress if we move to a module that represents a new Level block
         const nextMod = modules.find(m => m.id === userProgress.currentModuleId + 1);
         if (nextMod) {
             setUserProgress(prev => {
-                // Heuristic: Module 4 starts Level 2, Module 7 starts Level 3, etc.
-                // Assuming roughly 3 modules per level based on INITIAL_MODULES
                 const newLevel = Math.ceil((prev.currentModuleId + 1) / 3);
                 return { 
                     ...prev, 
@@ -364,11 +361,10 @@ const App: React.FC = () => {
   const manaPercentage = Math.min((userProgress.xp / maxMana) * 100, 100);
   const hasCompletedModules = modules.some(m => m.completed);
 
-  // Helper to group modules by Level for cleaner display
   const renderModuleList = () => {
     const grouped: Record<string, Module[]> = {};
     modules.forEach(mod => {
-      const level = mod.title.split(':')[0]; // Extracts "Nível 1", "Nível 2"
+      const level = mod.title.split(':')[0];
       if (!grouped[level]) grouped[level] = [];
       grouped[level].push(mod);
     });
@@ -380,7 +376,7 @@ const App: React.FC = () => {
         </h4>
         <div className="space-y-2">
           {mods.map(mod => {
-            const cleanTitle = mod.title.split(': ')[1] || mod.title; // Removes "Nível X: " prefix
+            const cleanTitle = mod.title.split(': ')[1] || mod.title;
             return (
               <div key={mod.id} className={`p-3 rounded-lg border transition-all ${
                 mod.active 
@@ -410,7 +406,7 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
       
-      {/* PENSEIRA MODAL (ARCHIVES) */}
+      {/* PENSEIRA MODAL */}
       {showArchives && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
           <div className="bg-slate-900 w-full max-w-4xl h-[80vh] rounded-2xl border border-slate-700 shadow-2xl flex flex-col">
@@ -443,7 +439,7 @@ const App: React.FC = () => {
                       <div className="p-4 max-h-60 overflow-y-auto scrollbar-hide space-y-4">
                         {session.messages.map(msg => (
                           <div key={msg.id} className={`text-sm p-2 rounded ${msg.role === 'user' ? 'bg-indigo-900/20 text-indigo-200 ml-8' : 'bg-slate-800/50 text-slate-400 mr-8'}`}>
-                            <span className="font-bold text-xs opacity-50 block mb-1">{msg.role === 'user' ? 'Lellinha' : 'Hermione'}</span>
+                            <span className="font-bold text-xs opacity-50 block mb-1">{msg.role === 'user' ? 'Lellinha' : 'Monitor'}</span>
                             {msg.content.substring(0, 150)}{msg.content.length > 150 ? '...' : ''}
                           </div>
                         ))}
@@ -460,17 +456,36 @@ const App: React.FC = () => {
       {/* Left Sidebar */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          <div className="bg-gradient-to-br from-blue-600 to-cyan-600 p-2 rounded-lg shadow-lg shadow-blue-900/20">
-            <Wand2 className="text-white" size={24} />
+          <div className="bg-gradient-to-br from-amber-500 to-yellow-600 p-2 rounded-lg shadow-lg shadow-amber-900/20">
+            <GraduationCap className="text-white" size={24} />
           </div>
           <div>
-            <h1 className="font-bold text-slate-100 leading-tight">Hermione</h1>
-            <span className="text-[10px] text-blue-400 font-medium uppercase tracking-wider">Monitora de Dados</span>
+            <h1 className="font-bold text-slate-100 leading-tight">Hogwarts EAD</h1>
+            <span className="text-[10px] text-amber-500 font-medium uppercase tracking-wider">Engenharia de Dados</span>
+          </div>
+        </div>
+
+        {/* Mentor Switcher */}
+        <div className="px-4 pt-4 pb-0">
+          <p className="text-[10px] text-slate-500 font-bold uppercase mb-2">Escolha seu Monitor:</p>
+          <div className="grid grid-cols-2 gap-2 bg-slate-950 p-1 rounded-lg border border-slate-800">
+             <button 
+               onClick={() => setActiveMentor('hermione')}
+               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'hermione' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+             >
+               <Wand2 size={12} /> Hermione
+             </button>
+             <button 
+               onClick={() => setActiveMentor('naru')}
+               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'naru' ? 'bg-pink-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+             >
+               <Heart size={12} /> Naru
+             </button>
           </div>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-2">
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-1 mb-2">Sua Trilha Mágica</h3>
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-1 mb-2 mt-2">Sua Trilha Mágica</h3>
           {renderModuleList()}
         </div>
 
@@ -485,7 +500,6 @@ const App: React.FC = () => {
                </div>
              </div>
              
-             {/* Mana Bar */}
              <div className="space-y-1">
                 <div className="flex justify-between text-[10px] font-medium">
                   <span className="text-blue-300 flex items-center gap-1"><Zap size={10}/> Mana</span>
@@ -501,7 +515,6 @@ const App: React.FC = () => {
            </div>
 
            <div className="grid grid-cols-2 gap-2">
-               {/* Penseira Button */}
               <button 
                 onClick={() => setShowArchives(true)}
                 className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-cyan-200 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-md transition-all border border-slate-700"
@@ -511,7 +524,6 @@ const App: React.FC = () => {
                 PENSEIRA
               </button>
 
-              {/* Archive Button */}
               <button 
                 onClick={handleArchiveAndReset}
                 className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-200 bg-slate-800 hover:bg-emerald-900/30 px-3 py-2 rounded-md transition-all border border-emerald-500/30 hover:border-emerald-500"
@@ -531,7 +543,7 @@ const App: React.FC = () => {
         </div>
       </aside>
 
-      {/* Main Content - Chat */}
+      {/* Main Content */}
       <main className="flex-1 flex flex-col relative w-full h-full">
         {/* Mobile Header */}
         <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur z-20">
@@ -539,7 +551,7 @@ const App: React.FC = () => {
             <button onClick={() => setShowMobileSidebar(!showMobileSidebar)} className="p-2 hover:bg-slate-800 rounded-lg">
               <Menu size={20} />
             </button>
-            <span className="font-bold">Hermione</span>
+            <span className="font-bold">Hogwarts EAD</span>
           </div>
           <span className="text-xs text-slate-500">{APP_VERSION}</span>
         </header>
@@ -564,7 +576,7 @@ const App: React.FC = () => {
             {appState === AppState.GENERATING && (
               <div className="flex items-center gap-2 text-slate-500 text-sm ml-2 animate-pulse">
                 <Sparkles size={16} className="text-purple-500 animate-spin" />
-                <span>Hermione está consultando os livros...</span>
+                <span>{activeMentor === 'hermione' ? 'Hermione consultando livros...' : 'Naru pensando com carinho...'}</span>
               </div>
             )}
             <div ref={messagesEndRef} />
@@ -592,8 +604,6 @@ const App: React.FC = () => {
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-hide">
-          
-          {/* Schema Viewer Loop */}
           <div>
             <h3 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
               Pergaminhos (Tabelas)
@@ -605,7 +615,6 @@ const App: React.FC = () => {
             </div>
           </div>
 
-          {/* Drops de Conhecimento */}
           <div>
             <h3 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
               <Lightbulb size={12} className="text-yellow-500" />
@@ -649,10 +658,8 @@ const App: React.FC = () => {
               })}
             </div>
           </div>
-
         </div>
       </aside>
-
     </div>
   );
 };

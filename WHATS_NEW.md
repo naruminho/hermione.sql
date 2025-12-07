@@ -1,6 +1,12 @@
 # Changelog - Jornada da Lellinha 🚀
 
-## v2.1 (Atual) - Limpeza Visual
+## v3.0 - Hogwarts EAD & Naru Monitor
+- **Rebranding Completo:** O app agora se chama "Hogwarts EAD".
+- **Sistema de Monitores:** Adicionada a opção de alternar entre "Hermione" (Rigorosa) e "Naru" (Carinhoso/Xuxuu).
+- **Personalidade Naru:** Implementada persona que usa "huahua", chama de "amorzinhu" e é extremamente paciente.
+- **Persistência de Monitor:** O app lembra qual monitor foi escolhido por último.
+
+## v2.1 - Limpeza Visual
 - **Sidebar Organizada:** Refatoração da barra lateral para agrupar módulos por Seções (Nível 1, Nível 2...) com cabeçalhos claros, removendo a repetição de texto nos cards.
 - **Visual Mais Limpo:** Melhoria na legibilidade da trilha de aprendizado.
 
