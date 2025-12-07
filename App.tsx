@@ -200,10 +200,16 @@ const App: React.FC = () => {
       timestamp: Date.now()
     };
     
-    setMessages(prev => [...prev, userMsg]);
+    // Optimistic update for UI
+    const newMessages = [...messages, userMsg];
+    setMessages(newMessages);
     setAppState(AppState.GENERATING);
 
-    const result = await generateContent(prompt);
+    // Get current module context
+    const currentModule = modules.find(m => m.active)?.title || "Módulo Geral";
+
+    // Pass FULL HISTORY and CONTEXT to the service
+    const result = await generateContent(prompt, newMessages, currentModule);
 
     // 1. Split Response from Options
     const parts = result.text.split('---OPTIONS---');
