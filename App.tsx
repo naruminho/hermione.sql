@@ -8,7 +8,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
 
-const APP_VERSION = "v4.9";
+const APP_VERSION = "v5.0";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
@@ -59,6 +59,7 @@ const App: React.FC = () => {
   const [userProgress, setUserProgress] = useState<UserProgress>({ xp: 0, level: 1, currentModuleId: 1 });
   const [archives, setArchives] = useState<ArchivedSession[]>([]);
   const [activeMentor, setActiveMentor] = useState<MentorType>('hermione');
+  const [isExamActive, setIsExamActive] = useState(false);
   
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -164,6 +165,7 @@ const App: React.FC = () => {
         suggestedActions: getWelcomeActions(activeMentor)
       };
       setMessages([resetMessage]);
+      setIsExamActive(false); // Reset exam state on archive
     }
   };
 
@@ -205,6 +207,13 @@ const App: React.FC = () => {
     if (text === "OWL_EXAM_REQUEST") {
       displayContent = "📜 Quero prestar meus N.O.M.s (Prova do Módulo)!";
       prompt = "OWL_EXAM_REQUEST";
+      setIsExamActive(true); // START EXAM MODE
+    }
+
+    if (text === "CANCEL_EXAM_REQUEST") {
+      displayContent = "❌ CANCELAR PROVA (Pânico!)";
+      prompt = "CANCEL_EXAM_REQUEST";
+      setIsExamActive(false); // END EXAM MODE
     }
 
     const userMsg: Message = {
@@ -256,6 +265,9 @@ const App: React.FC = () => {
       }
 
       if (unlockNext) {
+        // Exam passed!
+        setIsExamActive(false);
+
         // Unlock next module
         const nextId = userProgress.currentModuleId + 1;
         
@@ -418,7 +430,7 @@ const App: React.FC = () => {
 
       {/* Left Sidebar */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 border-b border-slate-800 flex items-center gap-3 bg-gradient-to-r from-indigo-900 to-purple-900">
+        <div className="p-6 border-b border-slate-800 flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600">
           <div className="bg-slate-950 p-2 rounded-lg shadow-lg">
             <GraduationCap className="text-white" size={24} />
           </div>
@@ -552,6 +564,7 @@ const App: React.FC = () => {
               onSend={handleSend} 
               appState={appState} 
               hasCompletedModules={hasCompletedModules} 
+              isExamActive={isExamActive}
             />
           </div>
         </div>

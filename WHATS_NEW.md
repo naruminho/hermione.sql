@@ -1,5 +1,10 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v5.0 - Sistema de Cancelamento de Provas
+- **Botão de Pânico:** Adicionado botão de cancelar prova (X Vermelho) que substitui o botão de início durante o exame.
+- **Reações de Desistência:** Hermione reage com severidade justa ("Sábia decisão") e Naruminho com acolhimento ("Relaxa xuxuu").
+- **Controle de Estado:** App agora sabe visualmente quando está em modo de prova (`isExamActive`).
+
 ## v4.9 - Refinamento de Texto
 - **Hermione:** Correção no texto de boas-vindas para remover spoilers sobre a personalidade do Naruminho.
 
