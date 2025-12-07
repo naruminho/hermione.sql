@@ -8,7 +8,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
 
-const APP_VERSION = "v4.1";
+const APP_VERSION = "v4.2";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {

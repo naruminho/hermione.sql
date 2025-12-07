@@ -1,5 +1,8 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v4.2 - Correção Anti-Spoiler
+- **Sugestões Inteligentes:** A IA agora é estritamente proibida de incluir a resposta do exercício ou códigos SQL nos botões de sugestão. Ela deve focar em meta-ações ("Dica", "Ajuda").
+
 ## v4.1 - Correção de Escopo da IA
 - **Calibragem da Hermione:** Ajuste na regra de escopo para permitir perguntas sobre o universo de Hogwarts (contexto de domínio) sem classificar como "fofoca", desde que relacionadas ao entendimento do banco de dados.
 
