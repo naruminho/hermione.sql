@@ -6,13 +6,13 @@ import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap, ArrowLeft } from 'lucide-react';
 
 const APP_VERSION = "v5.3";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
-    return "Oii Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou o **Naruminho**, seu monitor oficial. Preparei um currículo gostosinho pra você virar uma Engenheira de Dados top! huahua\n\nSe quiser algo mais... rígido... pode chamar a **Hermione** ali do lado.\n\nVamos começar pelo **Nível 1**, xuxuu. O que você quer fazer?";
+    return "Oii Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou o **Naruminho**, seu monitor oficial. Preparei um currículo gostosinho pra você virar uma Engenheira de Dados top! huahua\n\nSe quiser algo mais rígido, pode chamar a **Hermione** ali do lado.\n\nVamos começar pelo **Nível 1**, xuxuu. O que você quer fazer?";
   }
   return "Olá Isabella. Bem-vinda a **Hogwarts EAD**. 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo rigoroso para você se tornar uma Engenheira de Dados de elite.\n\nVocê também pode escolher o **Naruminho** como seu mentor ali na barra lateral.\n\nComeçamos pelo **Nível 1**. Concentre-se. O que deseja?";
 };
@@ -60,6 +60,7 @@ const App: React.FC = () => {
   const [archives, setArchives] = useState<ArchivedSession[]>([]);
   const [activeMentor, setActiveMentor] = useState<MentorType>('hermione');
   const [isExamActive, setIsExamActive] = useState(false);
+  const [selectedArchive, setSelectedArchive] = useState<ArchivedSession | null>(null);
   
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
@@ -379,80 +380,125 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
+    <div className="flex h-screen bg-gradient-to-br from-red-950 via-slate-950 to-amber-950 text-amber-100 overflow-hidden font-sans">
       
       {/* PENSEIRA MODAL */}
       {showArchives && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 w-full max-w-7xl h-[90vh] rounded-2xl border border-slate-700 shadow-2xl flex flex-col">
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-              <h2 className="text-xl font-bold flex items-center gap-2 text-cyan-400">
-                <BookOpen className="text-cyan-400" />
-                A Penseira (Memórias)
-              </h2>
-              <button onClick={() => setShowArchives(false)} className="p-2 hover:bg-slate-800 rounded-lg">
+          <div className="bg-gradient-to-br from-red-950 via-slate-950 to-amber-950 w-full max-w-7xl h-[90vh] rounded-2xl border border-red-900/60 shadow-[0_20px_60px_rgba(0,0,0,0.5)] flex flex-col overflow-hidden">
+            <div className="p-4 border-b border-red-900/60 flex items-center justify-between bg-gradient-to-r from-red-900/60 via-red-950 to-amber-900/40">
+              <div className="flex items-center gap-3">
+                {selectedArchive && (
+                  <button
+                    onClick={() => setSelectedArchive(null)}
+                    className="flex items-center gap-1 px-3 py-2 text-sm font-semibold text-amber-100 bg-red-900/80 hover:bg-red-800 rounded-lg border border-amber-700/60 shadow-sm transition-colors"
+                  >
+                    <ArrowLeft size={16} />
+                    Voltar
+                  </button>
+                )}
+                <h2 className="text-xl font-bold flex items-center gap-2 text-amber-200">
+                  <BookOpen className="text-amber-300" />
+                  A Penseira (Memórias)
+                </h2>
+              </div>
+              <button onClick={() => { setShowArchives(false); setSelectedArchive(null); }} className="p-2 hover:bg-red-900/70 rounded-lg text-amber-200">
                 <X size={20} />
               </button>
             </div>
-            <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
-              {archives.length === 0 ? (
-                <div className="text-center text-slate-500 mt-20">
-                  <History size={48} className="mx-auto mb-4 opacity-30" />
-                  <p>Sua Penseira está vazia. Arquive uma conversa para vê-la aqui.</p>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {archives.map(session => (
-                    <div key={session.id} className="bg-slate-950/50 rounded-xl border border-slate-800 overflow-hidden">
-                      <div className="p-3 bg-slate-900/80 border-b border-slate-800 flex justify-between items-center cursor-pointer">
-                        <div>
-                           <h3 className="font-bold text-slate-200">{session.title}</h3>
-                           <p className="text-xs text-slate-500">{new Date(session.date).toLocaleString()}</p>
+
+            {!selectedArchive ? (
+              <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+                {archives.length === 0 ? (
+                  <div className="text-center text-amber-200/70 mt-20">
+                    <History size={48} className="mx-auto mb-4 opacity-40 text-amber-300" />
+                    <p>Sua Penseira está vazia. Arquive uma conversa para vê-la aqui.</p>
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    {archives.map(session => (
+                      <button
+                        key={session.id}
+                        onClick={() => setSelectedArchive(session)}
+                        className="w-full text-left bg-red-950/40 hover:bg-red-900/40 rounded-xl border border-amber-900/50 transition-colors p-4 flex items-center justify-between shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
+                      >
+                        <div className="space-y-1">
+                          <h3 className="font-bold text-amber-100">{session.title}</h3>
+                          <p className="text-xs text-amber-200/70">{new Date(session.date).toLocaleString()}</p>
+                          <p className="text-sm text-amber-100/80 truncate">
+                            {session.messages[0]?.content.substring(0, 120)}{session.messages[0]?.content.length > 120 ? '...' : ''}
+                          </p>
                         </div>
-                        <span className="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700">{session.messages.length} msgs</span>
-                      </div>
-                      <div className="p-4 max-h-60 overflow-y-auto scrollbar-hide space-y-4">
-                        {session.messages.map(msg => (
-                          <div key={msg.id} className={`text-sm p-2 rounded ${msg.role === 'user' ? 'bg-indigo-900/20 text-indigo-200 ml-8' : 'bg-slate-800/50 text-slate-400 mr-8'}`}>
-                            <span className="font-bold text-xs opacity-50 block mb-1">{msg.role === 'user' ? 'Lellinha' : 'Monitor'}</span>
-                            {msg.content.substring(0, 150)}{msg.content.length > 150 ? '...' : ''}
-                          </div>
-                        ))}
+                        <div className="flex flex-col items-end gap-1 text-xs text-amber-200/70">
+                          <span className="bg-amber-900/60 px-2 py-1 rounded border border-amber-700/70 text-amber-100">{session.messages.length} msgs</span>
+                          <span className="text-amber-200/60">Clique para ler</span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="p-4 border-b border-amber-900/70 bg-red-900/40">
+                  <h3 className="text-lg font-bold text-amber-100">{selectedArchive.title}</h3>
+                  <p className="text-xs text-amber-200/70">Registrada em {new Date(selectedArchive.date).toLocaleString()}</p>
+                </div>
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide bg-gradient-to-b from-red-950/50 via-slate-950/60 to-amber-950/40">
+                  {selectedArchive.messages.map(msg => (
+                    <div
+                      key={msg.id}
+                      className={`max-w-4xl ${msg.role === 'user' ? 'ml-auto' : ''}`}
+                    >
+                      <div className={`p-4 rounded-2xl border shadow-md ${
+                        msg.role === 'user'
+                          ? 'bg-amber-900/30 border-amber-700/50 text-amber-50'
+                          : msg.isError
+                            ? 'bg-red-950/50 border-red-700/50 text-red-100'
+                            : 'bg-red-900/40 border-amber-800/50 text-amber-100'
+                      }`}>
+                        <div className="text-[11px] font-semibold uppercase tracking-wide opacity-70 mb-2">
+                          {msg.role === 'user' ? 'Lellinha' : 'Monitor'}
+                        </div>
+                        <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+                        <div className="text-[10px] opacity-50 mt-2">
+                          {new Date(msg.timestamp).toLocaleString()}
+                        </div>
                       </div>
                     </div>
                   ))}
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}
 
       {/* Left Sidebar */}
-      <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 border-b border-slate-800 flex items-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600">
-          <div className="bg-slate-950 p-2 rounded-lg shadow-lg">
+      <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-red-950/80 border-r border-amber-900/50 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 border-b border-amber-900/60 flex items-center gap-3 bg-gradient-to-r from-red-800 via-red-900 to-amber-800">
+          <div className="bg-red-950 p-2 rounded-lg shadow-lg border border-amber-800/60">
             <GraduationCap className="text-white" size={24} />
           </div>
           <div>
-            <h1 className="font-bold text-slate-100 leading-tight">Hogwarts EAD</h1>
-            <span className="text-[10px] text-indigo-200 font-medium uppercase tracking-wider">Engenharia de Dados</span>
+            <h1 className="font-bold text-amber-100 leading-tight">Hogwarts EAD</h1>
+            <span className="text-[10px] text-amber-200 font-medium uppercase tracking-wider">Engenharia de Dados</span>
           </div>
         </div>
 
         {/* Mentor Switcher */}
         <div className="px-4 pt-4 pb-0">
-          <p className="text-[10px] text-slate-500 font-bold uppercase mb-2">Escolha seu Monitor:</p>
-          <div className="grid grid-cols-2 gap-2 bg-slate-950 p-1 rounded-lg border border-slate-800">
+          <p className="text-[10px] text-amber-200/70 font-bold uppercase mb-2">Escolha seu Monitor:</p>
+          <div className="grid grid-cols-2 gap-2 bg-red-950/60 p-1 rounded-lg border border-amber-900/60">
              <button 
                onClick={() => setActiveMentor('hermione')}
-               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'hermione' ? 'bg-purple-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'hermione' ? 'bg-red-700 text-amber-100 shadow-lg shadow-red-900/50' : 'text-amber-200/70 hover:text-amber-100'}`}
              >
                <Wand2 size={12} /> Hermione
              </button>
              <button 
                onClick={() => setActiveMentor('naru')}
-               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'naru' ? 'bg-pink-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
+               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'naru' ? 'bg-amber-600 text-red-950 font-bold shadow-lg shadow-amber-900/40' : 'text-amber-200/70 hover:text-amber-100'}`}
              >
                <Heart size={12} /> Naruminho
              </button>
