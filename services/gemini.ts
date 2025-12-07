@@ -3,25 +3,25 @@ import { Message } from "../types";
 
 // Safe initialization of API Key
 const getApiKey = () => {
+  let key = '';
   try {
+    // We access process.env.API_KEY directly. 
+    // In Vercel (Vite Build), this string is replaced by the actual key (e.g., "AIza...").
+    // In Browser (Playground), this throws ReferenceError (process is not defined), which we catch.
     // @ts-ignore
-    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
-      // @ts-ignore
-      return process.env.API_KEY;
-    }
+    key = process.env.API_KEY;
   } catch (e) {
-    // Expected in browser environment
+    // Browser environment, process not defined.
+    // Fallback if we were using a global variable, otherwise return empty.
+    try {
+      // @ts-ignore
+      if (typeof __GOOGLE_API_KEY__ !== 'undefined') {
+        // @ts-ignore
+        key = __GOOGLE_API_KEY__;
+      }
+    } catch (e2) {}
   }
-  
-  try {
-     // @ts-ignore
-     if (typeof __GOOGLE_API_KEY__ !== 'undefined') {
-       // @ts-ignore
-       return __GOOGLE_API_KEY__;
-     }
-  } catch(e) {}
-
-  return '';
+  return key;
 };
 
 export interface GenerationResult {

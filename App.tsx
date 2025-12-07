@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit, AlertTriangle } from 'lucide-react';
 
-const APP_VERSION = "v1.6"; // INITIALIZATION FIX
+const APP_VERSION = "v1.7"; // UPDATED VERSION
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -134,7 +134,7 @@ const INITIAL_MESSAGES: Message[] = [
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules_v1.6', // Force refresh to new curriculum
+  MODULES: 'lellinha_modules_v1.7', // Updated version key
   PROGRESS: 'lellinha_progress'
 };
 
@@ -339,13 +339,13 @@ const App: React.FC = () => {
       {/* Left Sidebar - Navigation / Modules */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          {/* MUDANÇA VISUAL: CABEÇALHO VERMELHO PARA CONFIRMAÇÃO DE DEPLOY */}
-          <div className="bg-gradient-to-br from-red-600 to-orange-600 p-2 rounded-lg shadow-lg shadow-red-900/20">
+          {/* MUDANÇA VISUAL: CABEÇALHO AZUL PARA CONFIRMAÇÃO DE DEPLOY v1.7 */}
+          <div className="bg-gradient-to-br from-blue-600 to-cyan-600 p-2 rounded-lg shadow-lg shadow-blue-900/20">
             <Wand2 className="text-white" size={24} />
           </div>
           <div>
             <h1 className="font-bold text-slate-100 leading-tight">Hermione</h1>
-            <span className="text-[10px] text-red-400 font-medium uppercase tracking-wider">Monitora de Dados</span>
+            <span className="text-[10px] text-blue-400 font-medium uppercase tracking-wider">Monitora de Dados</span>
           </div>
         </div>
 
@@ -379,7 +379,7 @@ const App: React.FC = () => {
         <div className="p-4 border-t border-slate-800 space-y-3 bg-slate-900">
            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-800">
              <div className="flex items-center gap-3 mb-3">
-               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-slate-900">L</div>
+               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-slate-900">L</div>
                <div className="flex-1 min-w-0">
                  <p className="text-sm font-bold text-white truncate">Lellinha</p>
                  <p className="text-[10px] text-slate-400">Nível {userProgress.level} • {userProgress.xp} XP</p>
