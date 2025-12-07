@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit, AlertTriangle } from 'lucide-react';
 
-const APP_VERSION = "v1.4"; // ATUALIZADO PARA v1.4 COM DUELOS
+const APP_VERSION = "v1.5"; // CURRICULO COMPLETO + DROPS
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -85,33 +85,56 @@ const INITIAL_DROPS: KnowledgeDrop[] = [
   { id: '2', title: 'Cuidado com Strings', description: 'Comparar texto (Strings) é muito mais lento que comparar números. Prefira IDs sempre que der!', rarity: 'common', unlocked: true },
   { id: '3', title: 'O Perigo do SELECT *', description: 'Em bancos gigantes, trazer todas as colunas pode travar o cluster inteiro e custar caro!', rarity: 'rare', unlocked: false },
   { id: '4', title: 'JOIN é caro', description: 'Juntar tabelas exige mover dados pela rede (Shuffle). Evite joins desnecessários!', rarity: 'rare', unlocked: false },
+  { id: '5', title: 'NULL: O Dementador', description: 'NULL não é zero e nem espaço vazio. É ausência de alma! Qualquer conta com NULL vira NULL (1 + NULL = NULL).', rarity: 'rare', unlocked: false },
+  { id: '6', title: 'Partitioning (Horcruxes)', description: 'Dividir dados em pastas (ex: por ano) faz o Spark ler só o que precisa. É como esconder pedaços da alma para não morrer lendo tudo.', rarity: 'legendary', unlocked: false },
+  { id: '7', title: 'Parquet vs CSV', description: 'Parquet é colunar e comprimido. É como uma bolsa da Hermione: cabe muito mais coisa e você acha o item rápido sem tirar tudo pra fora.', rarity: 'common', unlocked: false },
+  { id: '8', title: 'Idempotência', description: 'Seu código deve poder rodar 1000 vezes sem duplicar dados. Se rodar duas vezes e criar dois Harrys, falhou!', rarity: 'legendary', unlocked: false },
 ];
 
 const INITIAL_MODULES: Module[] = [
-  { id: 1, title: 'Módulo 1: O Começo de Tudo', subtitle: 'SELECT e o mundo dos dados', active: true, completed: false },
-  { id: 2, title: 'Módulo 2: Filtrando o Ruído', subtitle: 'WHERE e filtros lógicos', active: false, completed: false },
-  { id: 3, title: 'Módulo 3: Agrupando Coisas', subtitle: 'GROUP BY e agregações', active: false, completed: false },
-  { id: 4, title: 'Módulo 4: O Temido JOIN', subtitle: 'Juntando tabelas diferentes', active: false, completed: false },
-  { id: 5, title: 'Módulo 5: Spark Tricks', subtitle: 'Particionamento e Shards', active: false, completed: false },
+  // ANO 1: FUNDAMENTOS
+  { id: 1, title: 'Ano 1: Feitiços Básicos', subtitle: 'SELECT, FROM, DISTINCT, LIMIT', active: true, completed: false },
+  { id: 2, title: 'Ano 1: Filtros de Proteção', subtitle: 'WHERE, AND, OR, IN', active: false, completed: false },
+  { id: 3, title: 'Ano 1: Organizando o Salão', subtitle: 'ORDER BY ASC/DESC', active: false, completed: false },
+  
+  // ANO 2: ARITMÂNCIA (Agregações)
+  { id: 4, title: 'Ano 2: Contando Estrelas', subtitle: 'COUNT, SUM, AVG, MIN, MAX', active: false, completed: false },
+  { id: 5, title: 'Ano 2: O Poder do Grupo', subtitle: 'GROUP BY (O divisor de águas)', active: false, completed: false },
+  { id: 6, title: 'Ano 2: Filtros Pós-Agrupamento', subtitle: 'HAVING vs WHERE', active: false, completed: false },
+  
+  // ANO 3: TRANSFIGURAÇÃO (Manipulação)
+  { id: 7, title: 'Ano 3: Lógica Condicional', subtitle: 'CASE WHEN (O "Se" do SQL)', active: false, completed: false },
+  { id: 8, title: 'Ano 3: Lidando com o Tempo', subtitle: 'YEAR(), MONTH(), DATEDIFF()', active: false, completed: false },
+  { id: 9, title: 'Ano 3: Expelliarmus NULLs', subtitle: 'COALESCE e tratamento de nulos', active: false, completed: false },
+  
+  // ANO 4: POÇÕES (Relacionamentos)
+  { id: 10, title: 'Ano 4: Misturando Caldeirões', subtitle: 'INNER JOIN (A interseção)', active: false, completed: false },
+  { id: 11, title: 'Ano 4: Buscando os Solitários', subtitle: 'LEFT JOIN e RIGHT JOIN', active: false, completed: false },
+  { id: 12, title: 'Ano 4: Unindo Forças', subtitle: 'UNION e UNION ALL', active: false, completed: false },
+  
+  // ANO 5: MAGIA ANTIGA (Engenharia Avançada)
+  { id: 13, title: 'Ano 5: Magia de Janela', subtitle: 'Window Functions (ROW_NUMBER, RANK)', active: false, completed: false },
+  { id: 14, title: 'Ano 5: Organizando o Caos', subtitle: 'CTEs (WITH) e Subqueries', active: false, completed: false },
+  { id: 15, title: 'Ano 5: Segredos do Spark', subtitle: 'Particionamento e Performance', active: false, completed: false },
 ];
 
 const INITIAL_MESSAGES: Message[] = [
   {
     id: 'welcome',
     role: 'assistant',
-    content: "Olá Lellinha! Eu sou a **Hermione**, sua monitora de dados! 🧙‍♀️✨\n\nSQL é apenas a língua mágica que usamos para conversar com os dados. Não se preocupe, vamos começar do **zero absoluto**.\n\nEscolha uma das opções abaixo para começarmos!",
+    content: "Olá Lellinha! Eu sou a **Hermione**, sua monitora de dados! 🧙‍♀️✨\n\nPreparei um currículo completo de Hogwarts para você, do 1º ao 5º ano. Vamos transformar você numa Engenheira de Dados melhor que a própria Minerva McGonagall!\n\nComeçamos pelo **Ano 1: Feitiços Básicos**. \n\nO que deseja fazer?",
     timestamp: Date.now(),
     suggestedActions: [
-      "O que é um SELECT?",
+      "Me ensine o SELECT",
       "Para que serve um banco de dados?",
-      "Como vejo os alunos?"
+      "Quero um desafio fácil"
     ]
   }
 ];
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules',
+  MODULES: 'lellinha_modules_v1.5', // Updated key to force refresh of modules structure
   PROGRESS: 'lellinha_progress'
 };
 
@@ -131,7 +154,18 @@ const App: React.FC = () => {
     const loadedProgress = localStorage.getItem(STORAGE_KEYS.PROGRESS);
 
     if (loadedMessages) setMessages(JSON.parse(loadedMessages));
-    if (loadedModules) setModules(JSON.parse(loadedModules));
+    // Check if loaded modules match the current version structure length roughly, if not, use initial to update curriculum
+    if (loadedModules) {
+       const parsed = JSON.parse(loadedModules);
+       if (parsed.length < 10) { // Old curriculum had fewer modules
+          setModules(INITIAL_MODULES); // Force update to new curriculum
+       } else {
+          setModules(parsed);
+       }
+    } else {
+       setModules(INITIAL_MODULES);
+    }
+
     if (loadedProgress) setUserProgress(JSON.parse(loadedProgress));
   }, []);
 
