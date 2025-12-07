@@ -1,5 +1,8 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v4.1 - Correção de Escopo da IA
+- **Calibragem da Hermione:** Ajuste na regra de escopo para permitir perguntas sobre o universo de Hogwarts (contexto de domínio) sem classificar como "fofoca", desde que relacionadas ao entendimento do banco de dados.
+
 ## v4.0 - N.O.M.s e Currículo Refinado
 - **N.O.M.s (Provas):** Adicionado botão de "Pergaminho" para prestar exames ao final de cada módulo. A IA gera 3 perguntas e só desbloqueia o próximo módulo se a aluna acertar.
 - **Módulo DISTINCT:** Adicionado módulo exclusivo para remover duplicatas no Nível 1.
