@@ -1,5 +1,9 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v3.4 - Refinamento de Nomes
+- **Hermione Formal:** Agora a Hermione trata a usuária exclusivamente como "Isabella", reforçando a rigidez acadêmica.
+- **Naruminho Carinhoso:** Mantém o tratamento de "Lellinha" e apelidos carinhosos, aumentando o contraste entre as personas.
+
 ## v3.3 - Personalidade Ajustada
 - **Hermione Impaciente:** Ajuste na personalidade da Hermione para ser mais pedante, impaciente e academicamente rigorosa (usando expressões como "Afff" e "É Levi-ô-sa").
 - **Contraste de Monitores:** A diferença entre a rigidez da Hermione e o carinho do Naruminho agora é extrema.
