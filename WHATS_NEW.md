@@ -1,5 +1,9 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v3.5 - Refinamento Naruminho
+- **Intimidade:** Naruminho foi instruído a nunca se apresentar formalmente, agindo naturalmente como quem já conhece a Lellinha.
+- **Risadas:** Adicionada a variação "hihihi" além do "huahua" para momentos mais fofos.
+
 ## v3.4 - Refinamento de Nomes
 - **Hermione Formal:** Agora a Hermione trata a usuária exclusivamente como "Isabella", reforçando a rigidez acadêmica.
 - **Naruminho Carinhoso:** Mantém o tratamento de "Lellinha" e apelidos carinhosos, aumentando o contraste entre as personas.

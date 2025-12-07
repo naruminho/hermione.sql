@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart } from 'lucide-react';
 
-const APP_VERSION = "v3.4";
+const APP_VERSION = "v3.5";
 
 const ALL_TABLES: TableSchema[] = [
   {
