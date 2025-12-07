@@ -1,5 +1,8 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v5.1 - Refinamento da Persona Hermione
+- **"É Levi-ô-sa" Contextual:** A IA agora usa frases de efeito da Hermione de forma contextual, adaptando as correções à sintaxe SQL (ex: "É SÉ-LECT, não Se-le-ct") em vez de repetir frases de Harry Potter aleatoriamente.
+
 ## v5.0 - Sistema de Cancelamento de Provas
 - **Botão de Pânico:** Adicionado botão de cancelar prova (X Vermelho) que substitui o botão de início durante o exame.
 - **Reações de Desistência:** Hermione reage com severidade justa ("Sábia decisão") e Naruminho com acolhimento ("Relaxa xuxuu").
