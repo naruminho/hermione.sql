@@ -45,3 +45,11 @@ export interface UserProgress {
   level: number;
   currentModuleId: number;
 }
+
+export interface ArchivedSession {
+  id: string;
+  date: number;
+  title: string;
+  messages: Message[];
+  endModule: string;
+}

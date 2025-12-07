@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateContent } from './services/gemini';
-import { Message, AppState, TableSchema, KnowledgeDrop, Module, UserProgress } from './types';
+import { Message, AppState, TableSchema, KnowledgeDrop, Module, UserProgress, ArchivedSession } from './types';
 import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit, AlertTriangle } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History } from 'lucide-react';
 
-const APP_VERSION = "v1.7"; // UPDATED VERSION
+const APP_VERSION = "v1.8";
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -80,9 +80,11 @@ const ALL_TABLES: TableSchema[] = [
   },
 ];
 
+// UPDATED: Advanced drops are now LOCKED by default. Added a basic starter drop.
 const INITIAL_DROPS: KnowledgeDrop[] = [
-  { id: '1', title: 'O Segredo do Lazy', description: 'O Spark (motor do Databricks) é preguiçoso. Ele não processa nada até você pedir para mostrar (Action).', rarity: 'legendary', unlocked: true },
-  { id: '2', title: 'Cuidado com Strings', description: 'Comparar texto (Strings) é muito mais lento que comparar números. Prefira IDs sempre que der!', rarity: 'common', unlocked: true },
+  { id: '0', title: 'O Ponto e Vírgula', description: 'Em SQL, o ; é como o "Malfeito Feito". Ele diz ao banco que seu comando acabou. Sem ele, a magia não acontece!', rarity: 'common', unlocked: true },
+  { id: '1', title: 'O Segredo do Lazy', description: 'O Spark (motor do Databricks) é preguiçoso. Ele não processa nada até você pedir para mostrar (Action).', rarity: 'legendary', unlocked: false },
+  { id: '2', title: 'Cuidado com Strings', description: 'Comparar texto (Strings) é muito mais lento que comparar números. Prefira IDs sempre que der!', rarity: 'common', unlocked: false },
   { id: '3', title: 'O Perigo do SELECT *', description: 'Em bancos gigantes, trazer todas as colunas pode travar o cluster inteiro e custar caro!', rarity: 'rare', unlocked: false },
   { id: '4', title: 'JOIN é caro', description: 'Juntar tabelas exige mover dados pela rede (Shuffle). Evite joins desnecessários!', rarity: 'rare', unlocked: false },
   { id: '5', title: 'NULL: O Dementador', description: 'NULL não é zero e nem espaço vazio. É ausência de alma! Qualquer conta com NULL vira NULL (1 + NULL = NULL).', rarity: 'rare', unlocked: false },
@@ -134,8 +136,9 @@ const INITIAL_MESSAGES: Message[] = [
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules_v1.7', // Updated version key
-  PROGRESS: 'lellinha_progress'
+  MODULES: 'lellinha_modules_v1.7',
+  PROGRESS: 'lellinha_progress',
+  ARCHIVES: 'lellinha_archives'
 };
 
 const App: React.FC = () => {
@@ -143,8 +146,12 @@ const App: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [modules, setModules] = useState<Module[]>(INITIAL_MODULES);
   const [userProgress, setUserProgress] = useState<UserProgress>({ xp: 0, level: 1, currentModuleId: 1 });
+  const [archives, setArchives] = useState<ArchivedSession[]>([]);
+  
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
+  const [showArchives, setShowArchives] = useState(false); // Modal state for Pensieve
+  
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // --- PERSISTENCE (LOAD) ---
@@ -152,21 +159,21 @@ const App: React.FC = () => {
     const loadedMessages = localStorage.getItem(STORAGE_KEYS.MESSAGES);
     const loadedModules = localStorage.getItem(STORAGE_KEYS.MODULES);
     const loadedProgress = localStorage.getItem(STORAGE_KEYS.PROGRESS);
+    const loadedArchives = localStorage.getItem(STORAGE_KEYS.ARCHIVES);
 
     if (loadedMessages) setMessages(JSON.parse(loadedMessages));
-    // Check if loaded modules match the current version structure length roughly, if not, use initial to update curriculum
     if (loadedModules) {
        const parsed = JSON.parse(loadedModules);
-       if (parsed.length < 10) { // Old curriculum had fewer modules
-          setModules(INITIAL_MODULES); // Force update to new curriculum
+       if (parsed.length < 10) {
+          setModules(INITIAL_MODULES);
        } else {
           setModules(parsed);
        }
     } else {
        setModules(INITIAL_MODULES);
     }
-
     if (loadedProgress) setUserProgress(JSON.parse(loadedProgress));
+    if (loadedArchives) setArchives(JSON.parse(loadedArchives));
   }, []);
 
   // --- PERSISTENCE (SAVE) ---
@@ -174,7 +181,8 @@ const App: React.FC = () => {
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
     localStorage.setItem(STORAGE_KEYS.MODULES, JSON.stringify(modules));
     localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(userProgress));
-  }, [messages, modules, userProgress]);
+    localStorage.setItem(STORAGE_KEYS.ARCHIVES, JSON.stringify(archives));
+  }, [messages, modules, userProgress, archives]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -186,13 +194,26 @@ const App: React.FC = () => {
 
   // --- LOGIC ---
 
-  const handleClearHistory = () => {
-    if (confirm('Tem certeza? Isso vai apagar toda a sua conversa e progresso.')) {
+  const handleArchiveAndReset = () => {
+    if (messages.length <= 1) {
+       // Just reset if almost empty
+       setMessages(INITIAL_MESSAGES);
+       return;
+    }
+
+    if (confirm('Deseja arquivar essa conversa na Pensativa e iniciar um novo ciclo?')) {
+      const currentModuleTitle = modules.find(m => m.active)?.title || "Geral";
+      const newArchive: ArchivedSession = {
+        id: Date.now().toString(),
+        date: Date.now(),
+        title: `Sessão: ${currentModuleTitle}`,
+        messages: messages,
+        endModule: currentModuleTitle
+      };
+      
+      setArchives(prev => [newArchive, ...prev]);
       setMessages(INITIAL_MESSAGES);
-      setModules(INITIAL_MODULES);
-      setUserProgress({ xp: 0, level: 1, currentModuleId: 1 });
-      localStorage.clear();
-      // We don't reload page to keep SPA feel, just reset state
+      // We keep XP and Modules progress, only chat is archived/cleared.
     }
   };
 
@@ -223,13 +244,11 @@ const App: React.FC = () => {
     let displayContent = text;
     let prompt = text;
 
-    // Handle Drill Mode Request
     if (text === "DUEL_MODE_REQUEST") {
       displayContent = "⚔️ Hermione, quero um DUELO! Mande uma bateria de exercícios!";
       prompt = "DUEL_MODE_REQUEST";
     }
 
-    // Handle Time Turner Request
     if (text === "TIME_TURNER_REQUEST") {
       displayContent = "⏳ Vira-Tempo: Hermione, revise algo que eu já aprendi.";
       prompt = "TIME_TURNER_REQUEST";
@@ -242,12 +261,10 @@ const App: React.FC = () => {
       timestamp: Date.now()
     };
     
-    // Optimistic update for UI
     const newMessages = [...messages, userMsg];
     setMessages(newMessages);
     setAppState(AppState.GENERATING);
 
-    // Get current module context
     const currentModule = modules.find(m => m.active)?.title || "Módulo Geral";
     const completedModulesList = modules
       .filter(m => m.completed)
@@ -255,7 +272,6 @@ const App: React.FC = () => {
       .join(", ");
 
     try {
-      // Pass FULL HISTORY and CONTEXT to the service
       const result = await generateContent(prompt, newMessages, currentModule, completedModulesList);
 
       if (result.error) {
@@ -270,15 +286,12 @@ const App: React.FC = () => {
         return;
       }
 
-      // 1. Split Response from Options
       const parts = result.text.split('---OPTIONS---');
       let rawContent = parts[0].trim();
       const rawOptions = parts[1] ? parts[1].trim().split('\n').filter(s => s.trim().length > 0) : [];
 
-      // 2. Parse Hidden Gamification Tags
       const { cleanText, xpGained, unlockNext } = parseHiddenTags(rawContent);
 
-      // 3. Update Progress if needed
       if (xpGained > 0) {
         setUserProgress(prev => ({ ...prev, xp: prev.xp + xpGained }));
       }
@@ -286,7 +299,6 @@ const App: React.FC = () => {
       if (unlockNext) {
         setModules(prev => {
           const nextId = userProgress.currentModuleId + 1;
-          // Check if next module exists and is not active
           const nextModuleExists = prev.find(m => m.id === nextId && !m.active);
           
           if (nextModuleExists) {
@@ -318,7 +330,7 @@ const App: React.FC = () => {
       const errorMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: "Ocorreu um erro crítico de comunicação. Verifique a API Key.",
+        content: "Ocorreu um erro crítico de comunicação.",
         timestamp: Date.now(),
         isError: true,
       };
@@ -328,7 +340,6 @@ const App: React.FC = () => {
     }
   };
 
-  // Mana bar calculation (just visual max 500 for level 1)
   const maxMana = 500;
   const manaPercentage = Math.min((userProgress.xp / maxMana) * 100, 100);
   const hasCompletedModules = modules.some(m => m.completed);
@@ -336,10 +347,57 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
       
-      {/* Left Sidebar - Navigation / Modules */}
+      {/* PENSIEVE MODAL (ARCHIVES) */}
+      {showArchives && (
+        <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-slate-900 w-full max-w-4xl h-[80vh] rounded-2xl border border-slate-700 shadow-2xl flex flex-col">
+            <div className="p-4 border-b border-slate-800 flex items-center justify-between">
+              <h2 className="text-xl font-bold flex items-center gap-2 text-cyan-400">
+                <BookOpen className="text-cyan-400" />
+                A Pensativa (Memórias)
+              </h2>
+              <button onClick={() => setShowArchives(false)} className="p-2 hover:bg-slate-800 rounded-lg">
+                <X size={20} />
+              </button>
+            </div>
+            <div className="flex-1 overflow-y-auto p-6 scrollbar-hide">
+              {archives.length === 0 ? (
+                <div className="text-center text-slate-500 mt-20">
+                  <History size={48} className="mx-auto mb-4 opacity-30" />
+                  <p>Sua Pensativa está vazia. Arquive uma conversa para vê-la aqui.</p>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {archives.map(session => (
+                    <div key={session.id} className="bg-slate-950/50 rounded-xl border border-slate-800 overflow-hidden">
+                      <div className="p-3 bg-slate-900/80 border-b border-slate-800 flex justify-between items-center cursor-pointer">
+                        <div>
+                           <h3 className="font-bold text-slate-200">{session.title}</h3>
+                           <p className="text-xs text-slate-500">{new Date(session.date).toLocaleString()}</p>
+                        </div>
+                        <span className="text-xs bg-slate-800 px-2 py-1 rounded border border-slate-700">{session.messages.length} msgs</span>
+                      </div>
+                      <div className="p-4 max-h-60 overflow-y-auto scrollbar-hide space-y-4">
+                        {session.messages.map(msg => (
+                          <div key={msg.id} className={`text-sm p-2 rounded ${msg.role === 'user' ? 'bg-indigo-900/20 text-indigo-200 ml-8' : 'bg-slate-800/50 text-slate-400 mr-8'}`}>
+                            <span className="font-bold text-xs opacity-50 block mb-1">{msg.role === 'user' ? 'Lellinha' : 'Hermione'}</span>
+                            {msg.content.substring(0, 150)}{msg.content.length > 150 ? '...' : ''}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Left Sidebar */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          {/* MUDANÇA VISUAL: CABEÇALHO AZUL PARA CONFIRMAÇÃO DE DEPLOY v1.7 */}
+          {/* Visual Version Indicator */}
           <div className="bg-gradient-to-br from-blue-600 to-cyan-600 p-2 rounded-lg shadow-lg shadow-blue-900/20">
             <Wand2 className="text-white" size={24} />
           </div>
@@ -401,19 +459,33 @@ const App: React.FC = () => {
              </div>
            </div>
 
-           <div className="flex items-center justify-between pt-1">
-              <span className="text-[10px] text-slate-600 flex items-center gap-1">
+           <div className="grid grid-cols-2 gap-2">
+               {/* Pensieve Button */}
+              <button 
+                onClick={() => setShowArchives(true)}
+                className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-cyan-200 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-md transition-all border border-slate-700"
+                title="Abrir a Pensativa (Histórico)"
+              >
+                <BookOpen size={14} />
+                PENSATIVA
+              </button>
+
+              {/* Archive & Reset Button */}
+              <button 
+                onClick={handleArchiveAndReset}
+                className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-200 bg-slate-800 hover:bg-emerald-900/30 px-3 py-2 rounded-md transition-all border border-emerald-500/30 hover:border-emerald-500"
+                title="Salvar e Limpar Chat"
+              >
+                <Save size={14} />
+                ARQUIVAR
+              </button>
+           </div>
+           
+           <div className="flex justify-center pt-2">
+             <span className="text-[10px] text-slate-600 flex items-center gap-1">
                 <GitCommit size={10} />
                 {APP_VERSION}
               </span>
-              <button 
-                onClick={handleClearHistory}
-                className="flex items-center gap-1.5 text-[10px] font-bold text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-md transition-all shadow-md shadow-red-900/20 border border-red-500"
-                title="Apagar histórico local"
-              >
-                <Trash2 size={12} />
-                RESETAR
-              </button>
            </div>
         </div>
       </aside>
