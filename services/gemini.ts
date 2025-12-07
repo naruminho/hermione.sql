@@ -1,5 +1,8 @@
 import { GoogleGenAI } from "@google/genai";
 
+// Declare process to avoid TypeScript errors in environments where types aren't fully loaded
+declare const process: any;
+
 // Safe API Key retrieval that works in both Vite (process.env) and Browser (shim)
 const getApiKey = () => {
   try {
