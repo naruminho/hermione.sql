@@ -12,7 +12,8 @@ export default defineConfig(({ mode }) => {
     define: {
       // Define a global constant that creates a direct string replacement in the frontend code
       // This prevents us from needing to use 'process.env' in the React app
-      'process.env.API_KEY': JSON.stringify(env.API_KEY)
+      'process.env.API_KEY': JSON.stringify(env.API_KEY || env.GEMINI_API_KEY),
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY || env.API_KEY)
     }
   }
 })

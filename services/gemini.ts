@@ -2,13 +2,26 @@ import { GoogleGenAI } from "@google/genai";
 import { Message, MentorType } from "../types";
 import { generateCurriculumPrompt, generateSchemaPrompt, ALL_TABLES, INITIAL_MODULES } from "../constants";
 
-// Safe initialization of API Key
+// Safe initialization of API Key (support Vite envs and backend define)
 const getApiKey = () => {
   let key = '';
+
+  // 1) Vite runtime env (preferred)
   try {
     // @ts-ignore
-    key = process.env.API_KEY;
-  } catch (e) {
+    key = (typeof import.meta !== 'undefined' && (import.meta.env?.API_KEY || import.meta.env?.GEMINI_API_KEY)) || '';
+  } catch (e) {}
+
+  // 2) Process env injected via define()
+  if (!key) {
+    try {
+      // @ts-ignore
+      key = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
+    } catch (e) {}
+  }
+
+  // 3) Global fallback (if bundled differently)
+  if (!key) {
     try {
       // @ts-ignore
       if (typeof __GOOGLE_API_KEY__ !== 'undefined') {
@@ -17,6 +30,7 @@ const getApiKey = () => {
       }
     } catch (e2) {}
   }
+
   return key;
 };
 
