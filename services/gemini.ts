@@ -1,14 +1,14 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Declare process to avoid TypeScript errors in environments where types aren't fully loaded
-declare const process: any;
+// Tell TypeScript that this global variable exists (injected by Vite at build time)
+declare const __GOOGLE_API_KEY__: string;
 
-// Safe API Key retrieval that works in both Vite (process.env) and Browser (shim)
 const getApiKey = () => {
   try {
-    return process.env.API_KEY;
+    // We strictly use the injected variable. No process.env here.
+    return __GOOGLE_API_KEY__;
   } catch (e) {
-    return ""; // Fail gracefully if process is not defined
+    return "";
   }
 };
 
@@ -29,7 +29,7 @@ export const generateContent = async (prompt: string): Promise<GenerationResult>
     if (!apiKey) {
       return { 
         text: "", 
-        error: "API Key não encontrada. Configure o arquivo .env ou a variável de ambiente." 
+        error: "API Key não encontrada. Verifique as configurações de ambiente no Vercel (Environment Variables -> API_KEY)." 
       };
     }
 
