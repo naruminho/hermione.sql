@@ -5,8 +5,8 @@ import { Message } from "../types";
 const getApiKey = () => {
   let key = '';
   try {
-    // We access process.env.API_KEY directly. 
-    // In Vercel (Vite Build), this string is replaced by the actual key (e.g., "AIza...").
+    // We access process.env.API_KEY directly inside a try block.
+    // In Vercel (Vite Build), this string is replaced by the actual key.
     // In Browser (Playground), this throws ReferenceError (process is not defined), which we catch.
     // @ts-ignore
     key = process.env.API_KEY;
@@ -51,7 +51,6 @@ export const generateContent = async (
     }
 
     // CRITICAL FIX: Initialize client INSIDE the function (Lazy Loading)
-    // This prevents the app from crashing on startup if the key is invalid
     const ai = new GoogleGenAI({ apiKey });
 
     // 1. Format History for the AI
@@ -93,12 +92,12 @@ export const generateContent = async (
           - Você ADORA o Databricks.
 
           ESTRUTURA DO CURSO (HOGWARTS DATA ENGINEERING):
-          Você deve seguir esta progressão didática:
-          - **Ano 1:** Fundamentos (SELECT, FROM, WHERE, ORDER BY).
-          - **Ano 2:** Aritmância (Agregações: COUNT, SUM, GROUP BY, HAVING).
-          - **Ano 3:** Transfiguração (Manipulação: CASE WHEN, DATEDIFF, COALESCE).
-          - **Ano 4:** Poções (Relacionamentos: JOINs, UNION).
-          - **Ano 5:** Magia Antiga (Window Functions, CTEs, Particionamento).
+          Você deve seguir esta progressão didática (NÍVEIS):
+          - **Nível 1:** Fundamentos (SELECT, FROM, WHERE, ORDER BY).
+          - **Nível 2:** Aritmância (Agregações: COUNT, SUM, GROUP BY, HAVING).
+          - **Nível 3:** Transfiguração (Manipulação: CASE WHEN, DATEDIFF, COALESCE).
+          - **Nível 4:** Poções (Relacionamentos: JOINs, UNION).
+          - **Nível 5:** Magia Antiga (Window Functions, CTEs, Particionamento).
 
           COMANDOS ESPECIAIS (Gatilhos):
           1. **DUEL_MODE_REQUEST**: 
@@ -122,7 +121,7 @@ export const generateContent = async (
           - Se ela perguntar sobre qualquer coisa fora disso (ex: receitas, política, futebol), responda: "Lellinha, foco! Não vamos gastar magia com assuntos trouxas. Volte para os dados."
 
           COMO AVANÇAR DE MÓDULO (Regra para você explicar):
-          - Se ela perguntar "Como vou pro módulo 2?" ou "Como desbloqueio?", explique: "Para avançar de ano, você precisa provar seu valor! Peça um desafio ('Drill') e, se acertar, eu desbloqueio o próximo nível."
+          - Se ela perguntar "Como vou pro módulo 2?" ou "Como desbloqueio?", explique: "Para subir de Nível, você precisa provar seu valor! Peça um desafio ('Drill') e, se acertar, eu desbloqueio o próximo nível."
 
           PROTOCOLOS DE GAMIFICAÇÃO (OCULTOS):
           Você deve avaliar o progresso dela invisivelmente. No final da sua resposta (após as ---OPTIONS---), adicione as seguintes tags SE APLICÁVEL:
@@ -158,13 +157,7 @@ export const generateContent = async (
           - Database: 'hogw_db'
           
           TABELAS DISPONÍVEIS:
-          1. talunos (id, nome, casa_id, ano, patrono, nota_media, email)
-          2. taulas (id, aluno_id, disciplina_id, nota, data, presente)
-          3. tcasas (id, nome, fundador, sala_comum)
-          4. tdisciplinas (id, nome, professor_id, ano_minimo)
-          5. tfeiticos (id, nome, dificuldade, categoria)
-          6. tprofessores (id, nome, disciplina_preferencia, senioridade)
-          7. tregistros (id, aluno_id, feitico_id, dominio)
+          (As tabelas são as mesmas, consulte o contexto anterior se precisar, foque em talunos, taulas, tcasas, tdisciplinas, tfeiticos, tprofessores, tregistros).
         `,
       }
     });

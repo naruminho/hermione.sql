@@ -5,9 +5,9 @@ import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock } from 'lucide-react';
 
-const APP_VERSION = "v1.8";
+const APP_VERSION = "v1.9";
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -80,51 +80,51 @@ const ALL_TABLES: TableSchema[] = [
   },
 ];
 
-// UPDATED: Advanced drops are now LOCKED by default. Added a basic starter drop.
+// DROPS now have minLevel to hide advanced content from beginners
 const INITIAL_DROPS: KnowledgeDrop[] = [
-  { id: '0', title: 'O Ponto e Vírgula', description: 'Em SQL, o ; é como o "Malfeito Feito". Ele diz ao banco que seu comando acabou. Sem ele, a magia não acontece!', rarity: 'common', unlocked: true },
-  { id: '1', title: 'O Segredo do Lazy', description: 'O Spark (motor do Databricks) é preguiçoso. Ele não processa nada até você pedir para mostrar (Action).', rarity: 'legendary', unlocked: false },
-  { id: '2', title: 'Cuidado com Strings', description: 'Comparar texto (Strings) é muito mais lento que comparar números. Prefira IDs sempre que der!', rarity: 'common', unlocked: false },
-  { id: '3', title: 'O Perigo do SELECT *', description: 'Em bancos gigantes, trazer todas as colunas pode travar o cluster inteiro e custar caro!', rarity: 'rare', unlocked: false },
-  { id: '4', title: 'JOIN é caro', description: 'Juntar tabelas exige mover dados pela rede (Shuffle). Evite joins desnecessários!', rarity: 'rare', unlocked: false },
-  { id: '5', title: 'NULL: O Dementador', description: 'NULL não é zero e nem espaço vazio. É ausência de alma! Qualquer conta com NULL vira NULL (1 + NULL = NULL).', rarity: 'rare', unlocked: false },
-  { id: '6', title: 'Partitioning (Horcruxes)', description: 'Dividir dados em pastas (ex: por ano) faz o Spark ler só o que precisa. É como esconder pedaços da alma para não morrer lendo tudo.', rarity: 'legendary', unlocked: false },
-  { id: '7', title: 'Parquet vs CSV', description: 'Parquet é colunar e comprimido. É como uma bolsa da Hermione: cabe muito mais coisa e você acha o item rápido sem tirar tudo pra fora.', rarity: 'common', unlocked: false },
-  { id: '8', title: 'Idempotência', description: 'Seu código deve poder rodar 1000 vezes sem duplicar dados. Se rodar duas vezes e criar dois Harrys, falhou!', rarity: 'legendary', unlocked: false },
+  { id: '0', title: 'O Ponto e Vírgula', description: 'Em SQL, o ; é como o "Malfeito Feito". Ele diz ao banco que seu comando acabou. Sem ele, a magia não acontece!', rarity: 'common', unlocked: true, minLevel: 1 },
+  { id: '2', title: 'Cuidado com Strings', description: 'Comparar texto (Strings) é muito mais lento que comparar números. Prefira IDs sempre que der!', rarity: 'common', unlocked: false, minLevel: 1 },
+  { id: '3', title: 'O Perigo do SELECT *', description: 'Em bancos gigantes, trazer todas as colunas pode travar o cluster inteiro e custar caro!', rarity: 'rare', unlocked: false, minLevel: 1 },
+  { id: '5', title: 'NULL: O Dementador', description: 'NULL não é zero e nem espaço vazio. É ausência de alma! Qualquer conta com NULL vira NULL (1 + NULL = NULL).', rarity: 'rare', unlocked: false, minLevel: 3 },
+  { id: '4', title: 'JOIN é caro', description: 'Juntar tabelas exige mover dados pela rede (Shuffle). Evite joins desnecessários!', rarity: 'rare', unlocked: false, minLevel: 4 },
+  { id: '7', title: 'Parquet vs CSV', description: 'Parquet é colunar e comprimido. É como uma bolsa da Hermione: cabe muito mais coisa e você acha o item rápido sem tirar tudo pra fora.', rarity: 'common', unlocked: false, minLevel: 5 },
+  { id: '1', title: 'O Segredo do Lazy', description: 'O Spark (motor do Databricks) é preguiçoso. Ele não processa nada até você pedir para mostrar (Action).', rarity: 'legendary', unlocked: false, minLevel: 5 },
+  { id: '6', title: 'Partitioning (Horcruxes)', description: 'Dividir dados em pastas (ex: por ano) faz o Spark ler só o que precisa. É como esconder pedaços da alma para não morrer lendo tudo.', rarity: 'legendary', unlocked: false, minLevel: 5 },
+  { id: '8', title: 'Idempotência', description: 'Seu código deve poder rodar 1000 vezes sem duplicar dados. Se rodar duas vezes e criar dois Harrys, falhou!', rarity: 'legendary', unlocked: false, minLevel: 5 },
 ];
 
 const INITIAL_MODULES: Module[] = [
-  // ANO 1: FUNDAMENTOS
-  { id: 1, title: 'Ano 1: Feitiços Básicos', subtitle: 'SELECT, FROM, DISTINCT, LIMIT', active: true, completed: false },
-  { id: 2, title: 'Ano 1: Filtros de Proteção', subtitle: 'WHERE, AND, OR, IN', active: false, completed: false },
-  { id: 3, title: 'Ano 1: Organizando o Salão', subtitle: 'ORDER BY ASC/DESC', active: false, completed: false },
+  // NÍVEL 1: FUNDAMENTOS
+  { id: 1, title: 'Nível 1: Feitiços Básicos', subtitle: 'SELECT, FROM, DISTINCT, LIMIT', active: true, completed: false },
+  { id: 2, title: 'Nível 1: Filtros de Proteção', subtitle: 'WHERE, AND, OR, IN', active: false, completed: false },
+  { id: 3, title: 'Nível 1: Organizando o Salão', subtitle: 'ORDER BY ASC/DESC', active: false, completed: false },
   
-  // ANO 2: ARITMÂNCIA (Agregações)
-  { id: 4, title: 'Ano 2: Contando Estrelas', subtitle: 'COUNT, SUM, AVG, MIN, MAX', active: false, completed: false },
-  { id: 5, title: 'Ano 2: O Poder do Grupo', subtitle: 'GROUP BY (O divisor de águas)', active: false, completed: false },
-  { id: 6, title: 'Ano 2: Filtros Pós-Agrupamento', subtitle: 'HAVING vs WHERE', active: false, completed: false },
+  // NÍVEL 2: ARITMÂNCIA (Agregações)
+  { id: 4, title: 'Nível 2: Contando Estrelas', subtitle: 'COUNT, SUM, AVG, MIN, MAX', active: false, completed: false },
+  { id: 5, title: 'Nível 2: O Poder do Grupo', subtitle: 'GROUP BY (O divisor de águas)', active: false, completed: false },
+  { id: 6, title: 'Nível 2: Filtros Pós-Agrupamento', subtitle: 'HAVING vs WHERE', active: false, completed: false },
   
-  // ANO 3: TRANSFIGURAÇÃO (Manipulação)
-  { id: 7, title: 'Ano 3: Lógica Condicional', subtitle: 'CASE WHEN (O "Se" do SQL)', active: false, completed: false },
-  { id: 8, title: 'Ano 3: Lidando com o Tempo', subtitle: 'YEAR(), MONTH(), DATEDIFF()', active: false, completed: false },
-  { id: 9, title: 'Ano 3: Expelliarmus NULLs', subtitle: 'COALESCE e tratamento de nulos', active: false, completed: false },
+  // NÍVEL 3: TRANSFIGURAÇÃO (Manipulação)
+  { id: 7, title: 'Nível 3: Lógica Condicional', subtitle: 'CASE WHEN (O "Se" do SQL)', active: false, completed: false },
+  { id: 8, title: 'Nível 3: Lidando com o Tempo', subtitle: 'YEAR(), MONTH(), DATEDIFF()', active: false, completed: false },
+  { id: 9, title: 'Nível 3: Expelliarmus NULLs', subtitle: 'COALESCE e tratamento de nulos', active: false, completed: false },
   
-  // ANO 4: POÇÕES (Relacionamentos)
-  { id: 10, title: 'Ano 4: Misturando Caldeirões', subtitle: 'INNER JOIN (A interseção)', active: false, completed: false },
-  { id: 11, title: 'Ano 4: Buscando os Solitários', subtitle: 'LEFT JOIN e RIGHT JOIN', active: false, completed: false },
-  { id: 12, title: 'Ano 4: Unindo Forças', subtitle: 'UNION e UNION ALL', active: false, completed: false },
+  // NÍVEL 4: POÇÕES (Relacionamentos)
+  { id: 10, title: 'Nível 4: Misturando Caldeirões', subtitle: 'INNER JOIN (A interseção)', active: false, completed: false },
+  { id: 11, title: 'Nível 4: Buscando os Solitários', subtitle: 'LEFT JOIN e RIGHT JOIN', active: false, completed: false },
+  { id: 12, title: 'Nível 4: Unindo Forças', subtitle: 'UNION e UNION ALL', active: false, completed: false },
   
-  // ANO 5: MAGIA ANTIGA (Engenharia Avançada)
-  { id: 13, title: 'Ano 5: Magia de Janela', subtitle: 'Window Functions (ROW_NUMBER, RANK)', active: false, completed: false },
-  { id: 14, title: 'Ano 5: Organizando o Caos', subtitle: 'CTEs (WITH) e Subqueries', active: false, completed: false },
-  { id: 15, title: 'Ano 5: Segredos do Spark', subtitle: 'Particionamento e Performance', active: false, completed: false },
+  // NÍVEL 5: MAGIA ANTIGA (Engenharia Avançada)
+  { id: 13, title: 'Nível 5: Magia de Janela', subtitle: 'Window Functions (ROW_NUMBER, RANK)', active: false, completed: false },
+  { id: 14, title: 'Nível 5: Organizando o Caos', subtitle: 'CTEs (WITH) e Subqueries', active: false, completed: false },
+  { id: 15, title: 'Nível 5: Segredos do Spark', subtitle: 'Particionamento e Performance', active: false, completed: false },
 ];
 
 const INITIAL_MESSAGES: Message[] = [
   {
     id: 'welcome',
     role: 'assistant',
-    content: "Olá Lellinha! Eu sou a **Hermione**, sua monitora de dados! 🧙‍♀️✨\n\nPreparei um currículo completo de Hogwarts para você, do 1º ao 5º ano. Vamos transformar você numa Engenheira de Dados melhor que a própria Minerva McGonagall!\n\nComeçamos pelo **Ano 1: Feitiços Básicos**. \n\nO que deseja fazer?",
+    content: "Olá Lellinha! Eu sou a **Hermione**, sua monitora de dados! 🧙‍♀️✨\n\nPreparei um currículo completo de Hogwarts para você, do Nível 1 ao 5. Vamos transformar você numa Engenheira de Dados melhor que a própria Minerva McGonagall!\n\nComeçamos pelo **Nível 1: Feitiços Básicos**. \n\nO que deseja fazer?",
     timestamp: Date.now(),
     suggestedActions: [
       "Me ensine o SELECT",
@@ -150,7 +150,7 @@ const App: React.FC = () => {
   
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
-  const [showArchives, setShowArchives] = useState(false); // Modal state for Pensieve
+  const [showArchives, setShowArchives] = useState(false);
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -178,7 +178,9 @@ const App: React.FC = () => {
 
   // --- PERSISTENCE (SAVE) ---
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+    // UPDATED: Do not save messages that are flagged as errors
+    const validMessages = messages.filter(m => !m.isError);
+    localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(validMessages));
     localStorage.setItem(STORAGE_KEYS.MODULES, JSON.stringify(modules));
     localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(userProgress));
     localStorage.setItem(STORAGE_KEYS.ARCHIVES, JSON.stringify(archives));
@@ -196,24 +198,24 @@ const App: React.FC = () => {
 
   const handleArchiveAndReset = () => {
     if (messages.length <= 1) {
-       // Just reset if almost empty
        setMessages(INITIAL_MESSAGES);
        return;
     }
 
-    if (confirm('Deseja arquivar essa conversa na Pensativa e iniciar um novo ciclo?')) {
+    if (confirm('Deseja arquivar essa conversa na Penseira e iniciar um novo ciclo?')) {
       const currentModuleTitle = modules.find(m => m.active)?.title || "Geral";
+      const validMessages = messages.filter(m => !m.isError); // Filter errors before archiving
+      
       const newArchive: ArchivedSession = {
         id: Date.now().toString(),
         date: Date.now(),
         title: `Sessão: ${currentModuleTitle}`,
-        messages: messages,
+        messages: validMessages,
         endModule: currentModuleTitle
       };
       
       setArchives(prev => [newArchive, ...prev]);
       setMessages(INITIAL_MESSAGES);
-      // We keep XP and Modules progress, only chat is archived/cleared.
     }
   };
 
@@ -311,8 +313,19 @@ const App: React.FC = () => {
           return prev;
         });
         
-        if (modules.find(m => m.id === userProgress.currentModuleId + 1)) {
-            setUserProgress(prev => ({ ...prev, currentModuleId: prev.currentModuleId + 1 }));
+        // Update user level progress if we move to a module that represents a new Level block
+        const nextMod = modules.find(m => m.id === userProgress.currentModuleId + 1);
+        if (nextMod) {
+            setUserProgress(prev => {
+                // Heuristic: Module 4 starts Level 2, Module 7 starts Level 3, etc.
+                // Assuming roughly 3 modules per level based on INITIAL_MODULES
+                const newLevel = Math.ceil((prev.currentModuleId + 1) / 3);
+                return { 
+                    ...prev, 
+                    currentModuleId: prev.currentModuleId + 1,
+                    level: newLevel > prev.level ? newLevel : prev.level
+                };
+            });
         }
       }
 
@@ -347,14 +360,14 @@ const App: React.FC = () => {
   return (
     <div className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
       
-      {/* PENSIEVE MODAL (ARCHIVES) */}
+      {/* PENSEIRA MODAL (ARCHIVES) */}
       {showArchives && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
           <div className="bg-slate-900 w-full max-w-4xl h-[80vh] rounded-2xl border border-slate-700 shadow-2xl flex flex-col">
             <div className="p-4 border-b border-slate-800 flex items-center justify-between">
               <h2 className="text-xl font-bold flex items-center gap-2 text-cyan-400">
                 <BookOpen className="text-cyan-400" />
-                A Pensativa (Memórias)
+                A Penseira (Memórias)
               </h2>
               <button onClick={() => setShowArchives(false)} className="p-2 hover:bg-slate-800 rounded-lg">
                 <X size={20} />
@@ -364,7 +377,7 @@ const App: React.FC = () => {
               {archives.length === 0 ? (
                 <div className="text-center text-slate-500 mt-20">
                   <History size={48} className="mx-auto mb-4 opacity-30" />
-                  <p>Sua Pensativa está vazia. Arquive uma conversa para vê-la aqui.</p>
+                  <p>Sua Penseira está vazia. Arquive uma conversa para vê-la aqui.</p>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -397,7 +410,6 @@ const App: React.FC = () => {
       {/* Left Sidebar */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          {/* Visual Version Indicator */}
           <div className="bg-gradient-to-br from-blue-600 to-cyan-600 p-2 rounded-lg shadow-lg shadow-blue-900/20">
             <Wand2 className="text-white" size={24} />
           </div>
@@ -433,7 +445,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        {/* User Profile / Mana Bar */}
+        {/* User Profile */}
         <div className="p-4 border-t border-slate-800 space-y-3 bg-slate-900">
            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-800">
              <div className="flex items-center gap-3 mb-3">
@@ -460,21 +472,21 @@ const App: React.FC = () => {
            </div>
 
            <div className="grid grid-cols-2 gap-2">
-               {/* Pensieve Button */}
+               {/* Penseira Button */}
               <button 
                 onClick={() => setShowArchives(true)}
                 className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-cyan-200 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-md transition-all border border-slate-700"
-                title="Abrir a Pensativa (Histórico)"
+                title="Abrir a Penseira (Histórico)"
               >
                 <BookOpen size={14} />
-                PENSATIVA
+                PENSEIRA
               </button>
 
-              {/* Archive & Reset Button */}
+              {/* Archive Button */}
               <button 
                 onClick={handleArchiveAndReset}
                 className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-200 bg-slate-800 hover:bg-emerald-900/30 px-3 py-2 rounded-md transition-all border border-emerald-500/30 hover:border-emerald-500"
-                title="Salvar e Limpar Chat"
+                title="Salvar na Penseira e Limpar Tela"
               >
                 <Save size={14} />
                 ARQUIVAR
@@ -541,7 +553,7 @@ const App: React.FC = () => {
         </div>
       </main>
 
-      {/* Right Sidebar - Context / Drops */}
+      {/* Right Sidebar - Drops */}
       <aside className="hidden lg:flex w-80 bg-slate-900/50 border-l border-slate-800 flex-col">
         <div className="p-5 border-b border-slate-800">
           <h2 className="font-semibold flex items-center gap-2 text-slate-200">
@@ -571,28 +583,41 @@ const App: React.FC = () => {
               Sapos de Chocolate (Drops)
             </h3>
             <div className="space-y-3">
-              {INITIAL_DROPS.map(drop => (
-                <div key={drop.id} className={`relative p-3 rounded-lg border transition-all ${
-                  drop.unlocked 
-                    ? 'bg-slate-800 border-slate-700' 
-                    : 'bg-slate-900/50 border-slate-800 opacity-50 grayscale'
-                }`}>
-                  <div className="flex items-start gap-3">
-                     <div className={`mt-1 w-2 h-2 rounded-full ${
-                       drop.rarity === 'legendary' ? 'bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' :
-                       drop.rarity === 'rare' ? 'bg-purple-400' : 'bg-slate-400'
-                     }`} />
-                     <div>
-                       <h4 className="text-xs font-bold text-slate-200">{drop.title}</h4>
-                       {drop.unlocked ? (
-                         <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{drop.description}</p>
-                       ) : (
-                         <p className="text-[10px] text-slate-600 mt-1 italic">??? Bloqueado</p>
-                       )}
-                     </div>
+              {INITIAL_DROPS.map(drop => {
+                const isLevelLocked = userProgress.level < drop.minLevel;
+                
+                return (
+                  <div key={drop.id} className={`relative p-3 rounded-lg border transition-all ${
+                    drop.unlocked 
+                      ? 'bg-slate-800 border-slate-700' 
+                      : 'bg-slate-900/50 border-slate-800 opacity-50 grayscale'
+                  }`}>
+                    <div className="flex items-start gap-3">
+                       <div className={`mt-1 w-2 h-2 rounded-full ${
+                         drop.rarity === 'legendary' ? 'bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' :
+                         drop.rarity === 'rare' ? 'bg-purple-400' : 'bg-slate-400'
+                       }`} />
+                       <div>
+                         <h4 className="text-xs font-bold text-slate-200">{drop.title}</h4>
+                         {drop.unlocked ? (
+                           <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{drop.description}</p>
+                         ) : (
+                           <div className="mt-1 flex items-center gap-1">
+                               {isLevelLocked ? (
+                                   <span className="text-[10px] text-red-400 flex items-center gap-1 font-semibold">
+                                     <Lock size={8} />
+                                     Requer Nível {drop.minLevel}
+                                   </span>
+                               ) : (
+                                   <p className="text-[10px] text-slate-600 italic">??? Bloqueado</p>
+                               )}
+                           </div>
+                         )}
+                       </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 

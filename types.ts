@@ -30,6 +30,7 @@ export interface KnowledgeDrop {
   description: string;
   rarity: 'common' | 'rare' | 'legendary';
   unlocked: boolean;
+  minLevel: number;
 }
 
 export interface Module {
