@@ -1,18 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 
-// Tell TypeScript that this global variable exists (injected by Vite at build time)
-declare const __GOOGLE_API_KEY__: string;
-
-const getApiKey = () => {
-  try {
-    // We strictly use the injected variable. No process.env here.
-    return __GOOGLE_API_KEY__;
-  } catch (e) {
-    return "";
-  }
-};
-
-const ai = new GoogleGenAI({ apiKey: getApiKey() });
+const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 export interface GenerationResult {
   text: string;
@@ -25,20 +13,11 @@ export interface GenerationResult {
  */
 export const generateContent = async (prompt: string): Promise<GenerationResult> => {
   try {
-    const apiKey = getApiKey();
-    if (!apiKey) {
-      return { 
-        text: "", 
-        error: "API Key não encontrada. Verifique as configurações de ambiente no Vercel (Environment Variables -> API_KEY)." 
-      };
-    }
-
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
       contents: prompt,
       config: {
         // Limit output tokens to prevent 'wall of text' and save quota. 
-        // 600 tokens is enough for a good explanation + code + options.
         maxOutputTokens: 600,
         // Disable thinking to ensure the small maxOutputTokens budget isn't consumed by thinking process
         thinkingConfig: { thinkingBudget: 0 },
