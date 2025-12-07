@@ -1,5 +1,8 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v5.3 - Penseira Expandida
+- **UI:** Aumentado o tamanho do modal da Penseira para 90% da altura da tela e maior largura, facilitando a leitura de históricos longos.
+
 ## v5.2 - Ajuste de Texto do Mentor
 - **Naruminho:** Removida a referência explícita a "seu namorado" na mensagem de boas-vindas do Naruminho, mantendo o tom carinhoso sem rótulos.
 

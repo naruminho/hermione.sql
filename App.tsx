@@ -8,7 +8,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
 
-const APP_VERSION = "v5.2";
+const APP_VERSION = "v5.3";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
@@ -384,7 +384,7 @@ const App: React.FC = () => {
       {/* PENSEIRA MODAL */}
       {showArchives && (
         <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4 backdrop-blur-sm animate-in fade-in">
-          <div className="bg-slate-900 w-full max-w-4xl h-[80vh] rounded-2xl border border-slate-700 shadow-2xl flex flex-col">
+          <div className="bg-slate-900 w-full max-w-7xl h-[90vh] rounded-2xl border border-slate-700 shadow-2xl flex flex-col">
             <div className="p-4 border-b border-slate-800 flex items-center justify-between">
               <h2 className="text-xl font-bold flex items-center gap-2 text-cyan-400">
                 <BookOpen className="text-cyan-400" />
