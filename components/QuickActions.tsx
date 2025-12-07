@@ -17,10 +17,10 @@ export const QuickActions: React.FC<QuickActionsProps> = ({ actions, onActionCli
           key={idx}
           onClick={() => onActionClick(action)}
           disabled={disabled}
-          className="group flex items-center gap-1.5 px-3 py-1.5 bg-slate-800 hover:bg-purple-600 border border-purple-500/30 hover:border-purple-500 text-xs text-purple-200 hover:text-white rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-purple-500/20"
+          className="group flex items-center gap-1.5 px-3 py-1.5 bg-[#2a171d] hover:bg-[#331c23] border border-[#3a1c23] text-xs text-[#f1e7c8] hover:text-white rounded-full transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm hover:shadow-[0_0_14px_rgba(0,0,0,0.35)]"
         >
           <span>{action}</span>
-          <ArrowRight size={10} className="opacity-50 group-hover:opacity-100 transition-opacity" />
+          <ArrowRight size={10} className="opacity-50 group-hover:opacity-100 transition-opacity text-[#cbbf95]" />
         </button>
       ))}
     </div>

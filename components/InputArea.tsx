@@ -66,8 +66,8 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
   return (
     <div className="w-full max-w-4xl mx-auto p-4">
       <form onSubmit={handleSubmit} className="relative group">
-        <div className={`absolute -inset-0.5 rounded-2xl opacity-20 group-hover:opacity-40 transition duration-500 blur ${isExamActive ? 'bg-gradient-to-r from-red-600 to-orange-600' : 'bg-gradient-to-r from-indigo-500 to-purple-600'}`}></div>
-        <div className="relative bg-slate-900 rounded-2xl border border-slate-700 flex items-end p-2 shadow-2xl gap-2">
+        <div className={`absolute -inset-0.5 rounded-2xl opacity-20 group-hover:opacity-35 transition duration-500 blur ${isExamActive ? 'bg-[#5a2a2f]' : 'bg-[#3a1c23]'}`}></div>
+        <div className="relative bg-[#1c0f16] rounded-2xl border border-[#3a1c23] flex items-end p-2 shadow-2xl gap-2">
           
           {/* Text Area */}
           <textarea
@@ -76,7 +76,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder={isExamActive ? "Responda à questão do N.O.M..." : "Pergunte sobre SQL ou peça um exemplo..."}
-            className="flex-1 bg-transparent text-slate-200 placeholder-slate-500 text-sm p-3 focus:outline-none resize-none max-h-48 overflow-y-auto scrollbar-hide"
+            className="flex-1 bg-transparent text-[#f1e7c8] placeholder-[#cbbf95] text-sm p-3 focus:outline-none resize-none max-h-48 overflow-y-auto scrollbar-hide"
             rows={1}
             disabled={appState === AppState.GENERATING}
           />
@@ -91,8 +91,8 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
               title={hasCompletedModules ? "Vira-Tempo: Revisar matéria passada" : "Conclua um módulo para desbloquear o Vira-Tempo"}
               className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center border border-transparent
                 ${appState === AppState.GENERATING || !hasCompletedModules || isExamActive
-                  ? 'text-slate-700 cursor-not-allowed opacity-50' 
-                  : 'bg-slate-800 text-amber-400 hover:bg-slate-700 hover:text-amber-300 hover:border-amber-500/30 shadow-[0_0_10px_rgba(251,191,36,0.1)]'
+                  ? 'text-[#6a5156] cursor-not-allowed opacity-40' 
+                  : 'bg-[#2a171d] text-[#f1e7c8] hover:bg-[#331c23] hover:text-white border border-[#3a1c23]'
                 }
               `}
             >
@@ -107,8 +107,8 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
               title="Modo Duelo: Bateria de Exercícios Rápidos"
               className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center border border-transparent
                 ${appState === AppState.GENERATING || isExamActive
-                  ? 'text-slate-700 cursor-not-allowed opacity-50' 
-                  : 'bg-slate-800 text-red-400 hover:bg-slate-700 hover:text-red-300 hover:border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]'
+                  ? 'text-[#6a5156] cursor-not-allowed opacity-40' 
+                  : 'bg-[#2a171d] text-[#f1e7c8] hover:bg-[#331c23] hover:text-white border border-[#3a1c23]'
                 }
               `}
             >
@@ -134,8 +134,8 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
                 title="Prestar N.O.M.s (Prova do Módulo)"
                 className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center border border-transparent
                   ${appState === AppState.GENERATING 
-                    ? 'text-slate-600 cursor-not-allowed' 
-                    : 'bg-slate-800 text-purple-400 hover:bg-slate-700 hover:text-purple-300 hover:border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
+                    ? 'text-[#6a5156] cursor-not-allowed' 
+                    : 'bg-[#2a171d] text-[#f1e7c8] hover:bg-[#331c23] hover:text-white border border-[#3a1c23]'
                   }
                 `}
               >
@@ -149,8 +149,8 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
               disabled={!input.trim() || appState === AppState.GENERATING}
               className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center
                 ${input.trim() && appState !== AppState.GENERATING
-                  ? 'bg-indigo-600 hover:bg-indigo-500 text-white shadow-lg hover:shadow-indigo-500/25'
-                  : 'bg-slate-800 text-slate-500 cursor-not-allowed'
+                  ? 'bg-[#b89a5a] hover:bg-[#c7ab6c] text-[#1c0f16] font-bold shadow-lg hover:shadow-[0_0_14px_rgba(0,0,0,0.35)]'
+                  : 'bg-[#2a171d] text-[#6a5156] cursor-not-allowed'
                 }
               `}
             >

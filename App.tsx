@@ -356,21 +356,21 @@ const App: React.FC = () => {
             return (
               <div key={mod.id} className={`p-3 rounded-lg border transition-all ${
                 mod.active 
-                  ? 'bg-indigo-900/30 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]' 
+                  ? 'bg-[#2b151d] border-[#6a3a3f]' 
                   : mod.completed
-                    ? 'bg-emerald-900/10 border-emerald-500/30'
-                    : 'bg-slate-800/30 border-transparent opacity-60'
+                    ? 'bg-[#241219] border-[#534234]'
+                    : 'bg-[#1a0e14] border-transparent opacity-60'
               }`}>
                 <div className="flex items-center justify-between mb-1">
                   <span className={`text-[10px] font-bold ${
-                      mod.active ? 'text-indigo-400' : mod.completed ? 'text-emerald-400' : 'text-slate-500'
+                      mod.active ? 'text-[#f1e7c8]' : mod.completed ? 'text-[#d9caa2]' : 'text-[#cbbf95]'
                     }`}>
                     {mod.active ? 'EM ANDAMENTO' : mod.completed ? 'COMPLETO' : 'BLOQUEADO'}
                   </span>
-                  {mod.active && <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>}
+                  {mod.active && <div className="w-1.5 h-1.5 rounded-full bg-[#d4b670] animate-pulse"></div>}
                 </div>
-                <h4 className={`font-medium text-xs md:text-sm ${mod.active ? 'text-slate-100' : 'text-slate-400'}`}>{cleanTitle}</h4>
-                <p className="text-[10px] text-slate-500 mt-0.5">{mod.subtitle}</p>
+                <h4 className={`font-medium text-xs md:text-sm ${mod.active ? 'text-[#f1e7c8]' : 'text-[#d9caa2]'}`}>{cleanTitle}</h4>
+                <p className="text-[10px] text-[#cbbf95] mt-0.5">{mod.subtitle}</p>
               </div>
             );
           })}
@@ -380,7 +380,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-red-950 via-slate-950 to-amber-950 text-amber-100 overflow-hidden font-sans">
+    <div className="flex h-screen bg-[#120a0e] text-[#e6d8b0] overflow-hidden font-sans">
       
       {/* PENSEIRA MODAL */}
       {showArchives && (
@@ -475,30 +475,30 @@ const App: React.FC = () => {
       )}
 
       {/* Left Sidebar */}
-      <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-red-950/80 border-r border-amber-900/50 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 border-b border-amber-900/60 flex items-center gap-3 bg-gradient-to-r from-red-800 via-red-900 to-amber-800">
-          <div className="bg-red-950 p-2 rounded-lg shadow-lg border border-amber-800/60">
+      <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-[#1c0f16] border-r border-[#3a1c23] flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="p-6 border-b border-[#3a1c23] flex items-center gap-3 bg-[#241019]">
+          <div className="bg-[#2a121c] p-2 rounded-lg shadow-lg border border-[#4a1f29]">
             <GraduationCap className="text-white" size={24} />
           </div>
           <div>
-            <h1 className="font-bold text-amber-100 leading-tight">Hogwarts EAD</h1>
-            <span className="text-[10px] text-amber-200 font-medium uppercase tracking-wider">Engenharia de Dados</span>
+            <h1 className="font-bold text-[#f1e7c8] leading-tight">Hogwarts EAD</h1>
+            <span className="text-[10px] text-[#d9caa2] font-medium uppercase tracking-wider">Engenharia de Dados</span>
           </div>
         </div>
 
         {/* Mentor Switcher */}
         <div className="px-4 pt-4 pb-0">
-          <p className="text-[10px] text-amber-200/70 font-bold uppercase mb-2">Escolha seu Monitor:</p>
-          <div className="grid grid-cols-2 gap-2 bg-red-950/60 p-1 rounded-lg border border-amber-900/60">
+          <p className="text-[10px] text-[#cbbf95] font-bold uppercase mb-2">Escolha seu Monitor:</p>
+          <div className="grid grid-cols-2 gap-2 bg-[#26121a] p-1 rounded-lg border border-[#3a1c23]">
              <button 
                onClick={() => setActiveMentor('hermione')}
-               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'hermione' ? 'bg-red-700 text-amber-100 shadow-lg shadow-red-900/50' : 'text-amber-200/70 hover:text-amber-100'}`}
+               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'hermione' ? 'bg-[#4d1c28] text-[#f1e7c8] shadow-md shadow-[#00000045]' : 'text-[#d9caa2] hover:text-[#f1e7c8]'}`}
              >
                <Wand2 size={12} /> Hermione
              </button>
              <button 
                onClick={() => setActiveMentor('naru')}
-               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'naru' ? 'bg-amber-600 text-red-950 font-bold shadow-lg shadow-amber-900/40' : 'text-amber-200/70 hover:text-amber-100'}`}
+               className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'naru' ? 'bg-[#5a2a2f] text-[#f1e7c8] font-bold shadow-md shadow-[#00000045]' : 'text-[#d9caa2] hover:text-[#f1e7c8]'}`}
              >
                <Heart size={12} /> Naruminho
              </button>
@@ -511,24 +511,24 @@ const App: React.FC = () => {
         </div>
 
         {/* User Profile */}
-        <div className="p-4 border-t border-slate-800 space-y-3 bg-slate-900">
-           <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-800">
+        <div className="p-4 border-t border-[#3a1c23] space-y-3 bg-[#1c0f16]">
+           <div className="bg-[#241219] rounded-xl p-3 border border-[#3a1c23]">
              <div className="flex items-center gap-3 mb-3">
-               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-slate-900">L</div>
+               <div className="w-9 h-9 rounded-full bg-[#5a2a2f] flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-[#1c0f16] text-[#f5ebce]">L</div>
                <div className="flex-1 min-w-0">
-                 <p className="text-sm font-bold text-white truncate">Lellinha</p>
-                 <p className="text-[10px] text-slate-400">Nível {userProgress.level} • {userProgress.xp} XP</p>
+                 <p className="text-sm font-bold text-[#f1e7c8] truncate">Lellinha</p>
+                 <p className="text-[10px] text-[#cbbf95]">Nível {userProgress.level} • {userProgress.xp} XP</p>
                </div>
              </div>
              
              <div className="space-y-1">
                 <div className="flex justify-between text-[10px] font-medium">
-                  <span className="text-blue-300 flex items-center gap-1"><Zap size={10}/> Mana</span>
-                  <span className="text-blue-300">{Math.floor(manaPercentage)}%</span>
+                  <span className="text-[#f1e7c8] flex items-center gap-1"><Zap size={10}/> Mana</span>
+                  <span className="text-[#f1e7c8]">{Math.floor(manaPercentage)}%</span>
                 </div>
-                <div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                <div className="h-1.5 w-full bg-[#1a0e14] rounded-full overflow-hidden">
                   <div 
-                    className="h-full bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)] transition-all duration-1000"
+                    className="h-full bg-[#b89a5a] rounded-full transition-all duration-1000"
                     style={{ width: `${manaPercentage}%` }}
                   ></div>
                 </div>
@@ -538,7 +538,7 @@ const App: React.FC = () => {
            <div className="grid grid-cols-2 gap-2">
               <button 
                 onClick={() => setShowArchives(true)}
-                className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-cyan-200 bg-slate-800 hover:bg-slate-700 px-3 py-2 rounded-md transition-all border border-slate-700"
+                className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-[#f1e7c8] bg-[#2a171d] hover:bg-[#331c23] px-3 py-2 rounded-md transition-all border border-[#3a1c23]"
                 title="Abrir a Penseira (Histórico)"
               >
                 <BookOpen size={14} />
@@ -547,7 +547,7 @@ const App: React.FC = () => {
 
               <button 
                 onClick={handleArchiveAndReset}
-                className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-emerald-200 bg-slate-800 hover:bg-emerald-900/30 px-3 py-2 rounded-md transition-all border border-emerald-500/30 hover:border-emerald-500"
+                className="flex items-center justify-center gap-1.5 text-[10px] font-bold text-[#f1e7c8] bg-[#3a1c23] hover:bg-[#422028] px-3 py-2 rounded-md transition-all border border-[#4a2a30]"
                 title="Salvar na Penseira e Limpar Tela"
               >
                 <Save size={14} />
@@ -556,7 +556,7 @@ const App: React.FC = () => {
            </div>
            
            <div className="flex justify-center pt-2">
-             <span className="text-[10px] text-slate-600 flex items-center gap-1">
+             <span className="text-[10px] text-[#cbbf95] flex items-center gap-1">
                 <GitCommit size={10} />
                 {APP_VERSION}
               </span>
@@ -567,14 +567,14 @@ const App: React.FC = () => {
       {/* Main Content */}
       <main className="flex-1 flex flex-col relative w-full h-full">
         {/* Mobile Header */}
-        <header className="md:hidden flex items-center justify-between p-4 border-b border-slate-800 bg-slate-900/50 backdrop-blur z-20">
+        <header className="md:hidden flex items-center justify-between p-4 border-b border-[#3a1c23] bg-[#1c0f16] backdrop-blur z-20">
           <div className="flex items-center gap-2">
-            <button onClick={() => setShowMobileSidebar(!showMobileSidebar)} className="p-2 hover:bg-slate-800 rounded-lg">
+            <button onClick={() => setShowMobileSidebar(!showMobileSidebar)} className="p-2 hover:bg-[#2a171d] rounded-lg text-[#f1e7c8]">
               <Menu size={20} />
             </button>
-            <span className="font-bold">Hogwarts EAD</span>
+            <span className="font-bold text-[#f1e7c8]">Hogwarts EAD</span>
           </div>
-          <span className="text-xs text-slate-500">{APP_VERSION}</span>
+          <span className="text-xs text-[#cbbf95]">{APP_VERSION}</span>
         </header>
 
         <div className="flex-1 overflow-y-auto p-4 md:p-8 scrollbar-hide">
@@ -604,7 +604,7 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="p-4 md:p-6 bg-slate-950 border-t border-slate-800/50 z-20">
+        <div className="p-4 md:p-6 bg-[#1c0f16] border-t border-[#3a1c23] z-20">
           <div className="max-w-3xl mx-auto">
             <InputArea 
               onSend={handleSend} 
@@ -617,17 +617,17 @@ const App: React.FC = () => {
       </main>
 
       {/* Right Sidebar - Drops */}
-      <aside className="hidden lg:flex w-80 bg-slate-900/50 border-l border-slate-800 flex-col">
-        <div className="p-5 border-b border-slate-800">
-          <h2 className="font-semibold flex items-center gap-2 text-slate-200">
-            <Database size={18} className="text-purple-400" />
+      <aside className="hidden lg:flex w-80 bg-[#1c0f16] border-l border-[#3a1c23] flex-col">
+        <div className="p-5 border-b border-[#3a1c23]">
+          <h2 className="font-semibold flex items-center gap-2 text-[#f1e7c8]">
+            <Database size={18} className="text-[#d4b670]" />
             hogw_db
           </h2>
         </div>
 
         <div className="flex-1 overflow-y-auto p-4 space-y-6 scrollbar-hide">
           <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
+            <h3 className="text-xs font-bold text-[#cbbf95] uppercase mb-3 flex items-center gap-2">
               Pergaminhos (Tabelas)
             </h3>
             <div className="space-y-1">
@@ -638,8 +638,8 @@ const App: React.FC = () => {
           </div>
 
           <div>
-            <h3 className="text-xs font-bold text-slate-500 uppercase mb-3 flex items-center gap-2">
-              <Lightbulb size={12} className="text-yellow-500" />
+            <h3 className="text-xs font-bold text-[#cbbf95] uppercase mb-3 flex items-center gap-2">
+              <Lightbulb size={12} className="text-[#d4b670]" />
               Sapos de Chocolate (Drops)
             </h3>
             <div className="space-y-3">
@@ -653,27 +653,27 @@ const App: React.FC = () => {
                 return (
                   <div key={drop.id} className={`relative p-3 rounded-lg border transition-all ${
                     !isLocked 
-                      ? 'bg-slate-800 border-slate-700' 
-                      : 'bg-slate-900/50 border-slate-800 opacity-50 grayscale'
+                      ? 'bg-[#241219] border-[#4a2a30]' 
+                      : 'bg-[#1a0e14] border-[#3a1c23] opacity-50 grayscale'
                   }`}>
                     <div className="flex items-start gap-3">
                        <div className={`mt-1 w-2 h-2 rounded-full ${
-                         drop.rarity === 'legendary' ? 'bg-yellow-400 shadow-[0_0_10px_rgba(250,204,21,0.5)]' :
-                         drop.rarity === 'rare' ? 'bg-purple-400' : 'bg-slate-400'
+                         drop.rarity === 'legendary' ? 'bg-[#d4b670]' :
+                         drop.rarity === 'rare' ? 'bg-[#c0887a]' : 'bg-[#cbbf95]'
                        }`} />
                        <div>
-                         <h4 className="text-xs font-bold text-slate-200">{drop.title}</h4>
+                         <h4 className="text-xs font-bold text-[#f1e7c8]">{drop.title}</h4>
                          {!isLocked ? (
-                           <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{drop.description}</p>
+                           <p className="text-[10px] text-[#d9caa2] mt-1 leading-relaxed">{drop.description}</p>
                          ) : (
                            <div className="mt-1 flex items-center gap-1">
                                {drop.linkedModuleId ? (
-                                   <span className="text-[10px] text-indigo-400 flex items-center gap-1 font-semibold">
+                                   <span className="text-[10px] text-[#d4b670] flex items-center gap-1 font-semibold">
                                      <Lock size={8} />
                                      Requer Módulo {drop.linkedModuleId}
                                    </span>
                                ) : (
-                                   <span className="text-[10px] text-red-400 flex items-center gap-1 font-semibold">
+                                   <span className="text-[10px] text-[#c0887a] flex items-center gap-1 font-semibold">
                                      <Lock size={8} />
                                      Requer Nível {drop.minLevel}
                                    </span>
