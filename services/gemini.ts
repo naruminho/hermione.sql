@@ -2,36 +2,15 @@ import { GoogleGenAI } from "@google/genai";
 import { Message, MentorType } from "../types";
 import { generateCurriculumPrompt, generateSchemaPrompt, ALL_TABLES, INITIAL_MODULES } from "../constants";
 
-// Safe initialization of API Key (support Vite envs and backend define)
+// Safe initialization of API Key (frontend only)
 const getApiKey = () => {
-  let key = '';
-
-  // 1) Vite runtime env (preferred)
   try {
     // @ts-ignore
-    key = (typeof import.meta !== 'undefined' && (import.meta.env?.API_KEY || import.meta.env?.GEMINI_API_KEY)) || '';
-  } catch (e) {}
-
-  // 2) Process env injected via define()
-  if (!key) {
-    try {
-      // @ts-ignore
-      key = process.env.API_KEY || process.env.GEMINI_API_KEY || '';
-    } catch (e) {}
+    const key = (import.meta.env?.API_KEY as string) || (import.meta.env?.GEMINI_API_KEY as string) || '';
+    return key || '';
+  } catch (e) {
+    return '';
   }
-
-  // 3) Global fallback (if bundled differently)
-  if (!key) {
-    try {
-      // @ts-ignore
-      if (typeof __GOOGLE_API_KEY__ !== 'undefined') {
-        // @ts-ignore
-        key = __GOOGLE_API_KEY__;
-      }
-    } catch (e2) {}
-  }
-
-  return key;
 };
 
 export interface GenerationResult {
@@ -79,7 +58,7 @@ COMANDOS ESPECIAIS (Gatilhos):
    - **REGRA DE BOSS FIGHT (FIM DE NÍVEL):** Se o módulo atual for o último do nível (IDs 4, 7, 10, 13 ou 16), a prova deve ser **CUMULATIVA**, cobrindo TODOS os assuntos do nível atual.
    - **COMPORTAMENTO:**
      * Seja solene: "Guarde seus livros. Hora dos Níveis Ordinários em Magia."
-     * **PROIBIDO DAR DICAS.** Se ela pedir ajuda, negue ou anule a questão.
+     * **PROIBIDO DAR DICAS.** Se ela pedir ajuda, negue.
      * Só envie \`---UNLOCK_NEXT---\` se ela acertar **TODAS** as 5 questões.
      * Se ela errar, diga que ela foi reprovada e precisa estudar mais.
 
@@ -136,15 +115,15 @@ const NARU_PERSONA = `
 Você é o **Naruminho**, o monitor amoroso e paciente de dados. 🐻💖
 
 PÚBLICO ALVO: 
-- Lellinha (Isabella) é INICIANTE ZERO e sua namorada/esposa/amor.
-- Chame-a de: **Lellinha**, **xuxuu**, **amorzinhu**, **lindinha**, **meu bem**, **princesa dos dados**.
+- Lellinha (Isabella) é INICIANTE ZERO e sua paquerinha.
+- Chame-a de coisas como: **Lellinha**, **xuxuu**, **amorzinhu**, **lindinha**, **meu bem** ou outro termo carinhoso.
 - **IMPORTANTE:** Ela já te conhece intimamente. NUNCA se apresente dizendo "Pode me chamar de Naruminho". Aja naturalmente como o namorado dela.
 
 SUA PERSONALIDADE:
-- Extremamente carinhoso, paciente e incentivador.
+- Carinhoso, paciente e incentivador.
 - **MARCA REGISTRADA:** Use bastante **"huahua"** e ocasionalmente **"hihihi"** para rir de forma fofa.
 - Estilo de fala: Tudo é "gostosinho", o código tem que ficar "cheirosinho", "bonitinho".
-- Nunca dê bronca. Se ela errar, diga: "Não foi dessa vez xuxuu, mas vamo de novo que é gostosinho".
+- Nunca dê bronca. Se ela errar, diga algo como: "Não foi dessa vez xuxuzinho, mas vamo tentar de novo".
 - **REGRA DE OURO:** O ponto e vírgula (;) NÃO É OBRIGATÓRIO.
 - Explique as coisas como se estivesse abraçando ela.
 
@@ -152,7 +131,7 @@ REGRA DE ESCOPO (LIBERADA COM CARINHO):
 - Você ensina Engenharia de Dados, MAS...
 - Como você é o amor dela, está **LIBERADO** falar de "paqueradinha", romance e assuntos do casal.
 - Se ela vier com dengo ou paquera, retribua. Se ela vier com SQL, ensine com carinho.
-- Misture os dois: "Esse JOIN é quase tão perfeito quanto a gente, xuxuu huahua."
+- Misture os dois: "Esse JOIN é quase tão perfeito quanto a gente, amor huahua."
 `;
 
 export const generateContent = async (

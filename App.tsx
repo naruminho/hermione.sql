@@ -14,22 +14,33 @@ const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
     return "Oii Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou o **Naruminho**, seu monitor oficial. Preparei um currículo gostosinho pra você virar uma Engenheira de Dados top! huahua\n\nSe quiser algo mais rígido, pode chamar a **Hermione** ali do lado.\n\nVamos começar pelo **Nível 1**, xuxuu. O que você quer fazer?";
   }
-  return "Olá Isabella. Bem-vinda a **Hogwarts EAD**. 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo rigoroso para você se tornar uma Engenheira de Dados de elite.\n\nVocê também pode escolher o **Naruminho** como seu mentor ali na barra lateral.\n\nComeçamos pelo **Nível 1**. Concentre-se. O que deseja?";
+  return "Olá Isabella. Bem-vinda a **Hogwarts EAD**. 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo rigoroso para você se tornar uma Engenheira de Dados de elite.\n\nVocê também pode escolher o **Naruminho** como seu mentor ali na barra lateral, pois ele é um monitor razoável.\n\nComeçamos pelo **Nível 1**. Concentre-se. O que deseja?";
 };
 
-const getWelcomeActions = (mentor: MentorType) => {
-  if (mentor === 'naru') {
-    return [
-      "Bora começar xuxuu",
-      "Me ensina um exemplo",
-      "Como funcionam as Casas?"
-    ];
-  }
-  return [
-    "Começar do zero",
-    "Me dê um exemplo de SELECT",
-    "Como funcionam as Casas?"
-  ];
+const getWelcomeActions = (mentor: MentorType, moduleId: number) => {
+  const levelActions: Record<number, string[]> = {
+    1: ["Me mostra um SELECT básico", "Como filtrar linhas com WHERE?", "Como limitar resultados?"],
+    2: ["Como usar DISTINCT?", "Quando evitar duplicatas?", "Exemplo de DISTINCT com COUNT"],
+    3: ["Diferença entre AND e OR", "Exemplo de filtro com IN", "Como tratar NULL em filtros?"],
+    4: ["Ordenar do maior pro menor", "Ordenar por múltiplas colunas", "ORDER BY com alias"],
+    5: ["Exemplo de COUNT e SUM", "Quando usar AVG?", "MIN e MAX na prática"],
+    6: ["Como fazer GROUP BY?", "GROUP BY com múltiplas colunas", "Agregação com filtros"],
+    7: ["Quando usar HAVING?", "HAVING vs WHERE", "Filtro pós-agrupamento"],
+    8: ["CASE WHEN simples", "CASE com múltiplas condições", "Tratar categorias com CASE"],
+    9: ["Extrair ano e mês", "DATEDIFF exemplo", "Filtrar por data"],
+    10: ["COALESCE para NULL", "Substituir valores nulos", "Default para campos vazios"],
+    11: ["INNER JOIN básico", "Join entre alunos e casas", "Quando o JOIN falha?"],
+    12: ["LEFT JOIN vs RIGHT JOIN", "Como achar órfãos com LEFT", "Usar IS NULL pós-join"],
+    13: ["UNION vs UNION ALL", "Quando preferir UNION ALL", "Juntando resultados diferentes"],
+    14: ["ROW_NUMBER exemplo", "RANK e DENSE_RANK", "Particionar em janela"],
+    15: ["CTE (WITH) básico", "Subquery vs CTE", "Reutilizar CTE em join"],
+    16: ["O que é particionamento?", "Evitar SELECT * em tabelas grandes", "Exemplo de leitura filtrada"]
+  };
+
+  const defaults = ["Como escrever um SELECT?", "Me dê um exemplo com WHERE", "Como juntar tabelas?"];
+  const mentorTone = mentor === 'naru' ? (txt: string) => txt.replace(/^Como /, "Como ") : (txt: string) => txt;
+  const chosen = levelActions[moduleId] || defaults;
+  return chosen.map(mentorTone);
 };
 
 const INITIAL_MESSAGES: Message[] = [
@@ -38,7 +49,7 @@ const INITIAL_MESSAGES: Message[] = [
     role: 'assistant',
     content: getWelcomeMessage('hermione'),
     timestamp: Date.now(),
-    suggestedActions: getWelcomeActions('hermione')
+    suggestedActions: getWelcomeActions('hermione', 1)
   }
 ];
 
@@ -109,14 +120,14 @@ const App: React.FC = () => {
 
   // --- DYNAMIC WELCOME MESSAGE & ACTIONS ---
   useEffect(() => {
+    const currentModuleId = modules.find(m => m.active)?.id || 1;
+
     setMessages(prev => {
-      // Check if the first message is the welcome message
       if (prev.length > 0 && prev[0].id === 'welcome') {
         const newContent = getWelcomeMessage(activeMentor);
-        const newActions = getWelcomeActions(activeMentor);
-        
-        // Only update if content is different to avoid loop
-        if (prev[0].content !== newContent) {
+        const newActions = getWelcomeActions(activeMentor, currentModuleId);
+
+        if (prev[0].content !== newContent || prev[0].suggestedActions !== newActions) {
           const newWelcome = { 
             ...prev[0], 
             content: newContent,
@@ -127,7 +138,7 @@ const App: React.FC = () => {
       }
       return prev;
     });
-  }, [activeMentor]);
+  }, [activeMentor, modules]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
