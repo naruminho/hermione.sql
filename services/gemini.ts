@@ -12,7 +12,7 @@ const getApiKey = () => {
       return process.env.API_KEY;
     }
   } catch (e) {
-    console.warn("Could not read process.env.API_KEY");
+    console.warn("Could not read process.env.API_KEY (expected in browser environment)");
   }
   return '';
 };
@@ -35,7 +35,9 @@ export const generateContent = async (
   try {
     const apiKey = getApiKey();
     if (!apiKey) {
-      throw new Error("API Key not found. Please ensure environment variables are configured.");
+      // Allow execution in playground if the environment injects the key differently,
+      // but warn if it's strictly missing.
+      console.warn("API Key missing check.");
     }
 
     // 1. Format History for the AI

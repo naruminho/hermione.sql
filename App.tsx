@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit, AlertTriangle } from 'lucide-react';
 
-const APP_VERSION = "v1.2"; // Atualizado para confirmar o Deploy
+const APP_VERSION = "v1.3"; // ATUALIZADO PARA v1.3
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -270,12 +270,13 @@ const App: React.FC = () => {
       {/* Left Sidebar - Navigation / Modules */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-2 rounded-lg shadow-lg shadow-purple-900/20">
+          {/* MUDANÇA VISUAL: CABEÇALHO ROSA PARA CONFIRMAÇÃO DE DEPLOY */}
+          <div className="bg-gradient-to-br from-pink-600 to-rose-600 p-2 rounded-lg shadow-lg shadow-rose-900/20">
             <Wand2 className="text-white" size={24} />
           </div>
           <div>
             <h1 className="font-bold text-slate-100 leading-tight">Hermione</h1>
-            <span className="text-[10px] text-purple-400 font-medium uppercase tracking-wider">Monitora de Dados</span>
+            <span className="text-[10px] text-pink-400 font-medium uppercase tracking-wider">Monitora de Dados</span>
           </div>
         </div>
 
@@ -338,7 +339,7 @@ const App: React.FC = () => {
               </span>
               <button 
                 onClick={handleClearHistory}
-                className="flex items-center gap-1.5 text-[10px] font-bold text-red-400 hover:text-white bg-red-950/30 hover:bg-red-600 px-3 py-1.5 rounded-md transition-all border border-red-900/50 hover:border-red-500"
+                className="flex items-center gap-1.5 text-[10px] font-bold text-white bg-red-600 hover:bg-red-700 px-3 py-1.5 rounded-md transition-all shadow-md shadow-red-900/20 border border-red-500"
                 title="Apagar histórico local"
               >
                 <Trash2 size={12} />
