@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock } from 'lucide-react';
 
-const APP_VERSION = "v1.9";
+const APP_VERSION = "v2.1";
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -357,6 +357,49 @@ const App: React.FC = () => {
   const manaPercentage = Math.min((userProgress.xp / maxMana) * 100, 100);
   const hasCompletedModules = modules.some(m => m.completed);
 
+  // Helper to group modules by Level for cleaner display
+  const renderModuleList = () => {
+    const grouped: Record<string, Module[]> = {};
+    modules.forEach(mod => {
+      const level = mod.title.split(':')[0]; // Extracts "Nível 1", "Nível 2"
+      if (!grouped[level]) grouped[level] = [];
+      grouped[level].push(mod);
+    });
+
+    return Object.entries(grouped).map(([level, mods]) => (
+      <div key={level} className="mb-4">
+        <h4 className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 pl-1 border-b border-slate-800 pb-1">
+          {level.replace('Nível ', 'NÍVEL ')}
+        </h4>
+        <div className="space-y-2">
+          {mods.map(mod => {
+            const cleanTitle = mod.title.split(': ')[1] || mod.title; // Removes "Nível X: " prefix
+            return (
+              <div key={mod.id} className={`p-3 rounded-lg border transition-all ${
+                mod.active 
+                  ? 'bg-purple-900/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
+                  : mod.completed
+                    ? 'bg-emerald-900/10 border-emerald-500/30'
+                    : 'bg-slate-800/30 border-transparent opacity-60'
+              }`}>
+                <div className="flex items-center justify-between mb-1">
+                  <span className={`text-[10px] font-bold ${
+                      mod.active ? 'text-purple-400' : mod.completed ? 'text-emerald-400' : 'text-slate-500'
+                    }`}>
+                    {mod.active ? 'EM ANDAMENTO' : mod.completed ? 'COMPLETO' : 'BLOQUEADO'}
+                  </span>
+                  {mod.active && <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></div>}
+                </div>
+                <h4 className={`font-medium text-xs md:text-sm ${mod.active ? 'text-slate-100' : 'text-slate-400'}`}>{cleanTitle}</h4>
+                <p className="text-[10px] text-slate-500 mt-0.5">{mod.subtitle}</p>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ));
+  };
+
   return (
     <div className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
       
@@ -419,30 +462,9 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-2">Sua Trilha Mágica</h3>
-          <div className="space-y-2">
-            {modules.map((mod) => (
-              <div key={mod.id} className={`p-3 rounded-lg border transition-all ${
-                mod.active 
-                  ? 'bg-purple-900/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
-                  : mod.completed
-                    ? 'bg-emerald-900/10 border-emerald-500/30'
-                    : 'bg-slate-800/30 border-transparent opacity-60'
-              }`}>
-                <div className="flex items-center justify-between mb-1">
-                  <span className={`text-[10px] font-bold ${
-                      mod.active ? 'text-purple-400' : mod.completed ? 'text-emerald-400' : 'text-slate-500'
-                    }`}>
-                    {mod.active ? 'EM ANDAMENTO' : mod.completed ? 'COMPLETO' : 'BLOQUEADO'}
-                  </span>
-                  {mod.active && <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></div>}
-                </div>
-                <h4 className={`font-medium text-xs md:text-sm ${mod.active ? 'text-slate-100' : 'text-slate-400'}`}>{mod.title}</h4>
-                <p className="text-[10px] text-slate-500 mt-0.5">{mod.subtitle}</p>
-              </div>
-            ))}
-          </div>
+        <div className="flex-1 overflow-y-auto p-4 space-y-2">
+          <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-1 mb-2">Sua Trilha Mágica</h3>
+          {renderModuleList()}
         </div>
 
         {/* User Profile */}
