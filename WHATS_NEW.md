@@ -1,5 +1,10 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v4.8 - N.O.M.s Cumulativos (Boss Fight)
+- **Prova Inteligente:** Diferenciação entre Prova Comum (Módulo) e Exame Final de Nível.
+- **Boss Fight:** Nos últimos módulos de cada nível, a prova cobre todo o conteúdo do nível cumulativamente.
+- **Visual:** Mudança do cabeçalho para Roxo Índigo para confirmar atualização.
+
 ## v4.4 - N.O.M.s e Currículo Refinado
 - **N.O.M.s (Provas):** Adicionado botão de "Pergaminho" para prestar exames ao final de cada módulo. A IA gera 3 perguntas e só desbloqueia o próximo módulo se a aluna acertar.
 - **Módulo DISTINCT:** Adicionado módulo exclusivo para remover duplicatas no Nível 1.

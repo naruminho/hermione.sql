@@ -8,7 +8,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
 
-const APP_VERSION = "v4.4";
+const APP_VERSION = "v4.8";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
@@ -44,7 +44,7 @@ const INITIAL_MESSAGES: Message[] = [
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules_v4.4', // Updated to force reload of modules
+  MODULES: 'lellinha_modules_v4.4', // Force reload for curriculum structure
   DROPS: 'lellinha_drops_v4.0',
   PROGRESS: 'lellinha_progress',
   ARCHIVES: 'lellinha_archives',
@@ -343,18 +343,18 @@ const App: React.FC = () => {
             return (
               <div key={mod.id} className={`p-3 rounded-lg border transition-all ${
                 mod.active 
-                  ? 'bg-purple-900/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
+                  ? 'bg-indigo-900/30 border-indigo-500/50 shadow-[0_0_15px_rgba(99,102,241,0.1)]' 
                   : mod.completed
                     ? 'bg-emerald-900/10 border-emerald-500/30'
                     : 'bg-slate-800/30 border-transparent opacity-60'
               }`}>
                 <div className="flex items-center justify-between mb-1">
                   <span className={`text-[10px] font-bold ${
-                      mod.active ? 'text-purple-400' : mod.completed ? 'text-emerald-400' : 'text-slate-500'
+                      mod.active ? 'text-indigo-400' : mod.completed ? 'text-emerald-400' : 'text-slate-500'
                     }`}>
                     {mod.active ? 'EM ANDAMENTO' : mod.completed ? 'COMPLETO' : 'BLOQUEADO'}
                   </span>
-                  {mod.active && <div className="w-1.5 h-1.5 rounded-full bg-purple-500 animate-pulse"></div>}
+                  {mod.active && <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></div>}
                 </div>
                 <h4 className={`font-medium text-xs md:text-sm ${mod.active ? 'text-slate-100' : 'text-slate-400'}`}>{cleanTitle}</h4>
                 <p className="text-[10px] text-slate-500 mt-0.5">{mod.subtitle}</p>
@@ -418,13 +418,13 @@ const App: React.FC = () => {
 
       {/* Left Sidebar */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          <div className="bg-gradient-to-br from-amber-500 to-yellow-600 p-2 rounded-lg shadow-lg shadow-amber-900/20">
+        <div className="p-6 border-b border-slate-800 flex items-center gap-3 bg-gradient-to-r from-indigo-900 to-purple-900">
+          <div className="bg-slate-950 p-2 rounded-lg shadow-lg">
             <GraduationCap className="text-white" size={24} />
           </div>
           <div>
             <h1 className="font-bold text-slate-100 leading-tight">Hogwarts EAD</h1>
-            <span className="text-[10px] text-amber-500 font-medium uppercase tracking-wider">Engenharia de Dados</span>
+            <span className="text-[10px] text-indigo-200 font-medium uppercase tracking-wider">Engenharia de Dados</span>
           </div>
         </div>
 
