@@ -1,19 +1,18 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message } from "../types";
 
-// Tell TypeScript that process exists (injected by Vite at build time)
-declare const process: any;
-
-// Safe initialization for browser environment where process might be undefined
+// Safe initialization of API Key
+// 1. First try: standard process.env (Vite replaces this string during build)
+// 2. Second try: runtime check for process (Playground/Dev fallback)
 const getApiKey = () => {
   try {
-    // In Vite production build with 'define', process.env.API_KEY is replaced by the string literal
-    // In development or if check fails, we try to access it safely
-    if (typeof process !== 'undefined' && process.env) {
+    // @ts-ignore
+    if (typeof process !== 'undefined' && process.env && process.env.API_KEY) {
+      // @ts-ignore
       return process.env.API_KEY;
     }
   } catch (e) {
-    // Ignore reference errors
+    console.warn("Could not read process.env.API_KEY");
   }
   return '';
 };

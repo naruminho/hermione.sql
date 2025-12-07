@@ -5,9 +5,9 @@ import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit, AlertTriangle } from 'lucide-react';
 
-const APP_VERSION = "v1.1"; // Increment this to verify deploys
+const APP_VERSION = "v1.2"; // Atualizado para confirmar o Deploy
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -338,11 +338,11 @@ const App: React.FC = () => {
               </span>
               <button 
                 onClick={handleClearHistory}
-                className="flex items-center gap-1.5 text-[10px] text-red-400 hover:text-red-300 hover:bg-red-950/30 px-2 py-1 rounded transition-colors"
+                className="flex items-center gap-1.5 text-[10px] font-bold text-red-400 hover:text-white bg-red-950/30 hover:bg-red-600 px-3 py-1.5 rounded-md transition-all border border-red-900/50 hover:border-red-500"
                 title="Apagar histórico local"
               >
                 <Trash2 size={12} />
-                Resetar
+                RESETAR
               </button>
            </div>
         </div>
