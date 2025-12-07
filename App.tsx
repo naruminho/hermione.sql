@@ -8,7 +8,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
 
-const APP_VERSION = "v3.8";
+const APP_VERSION = "v4.0";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
@@ -17,24 +17,35 @@ const getWelcomeMessage = (mentor: MentorType) => {
   return "Olá Isabella. Bem-vinda a **Hogwarts EAD**. 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo rigoroso para você se tornar uma Engenheira de Dados de elite.\n\nVocê também pode escolher o **Naruminho** como seu mentor ali na barra lateral, se preferir menos... disciplina.\n\nComeçamos pelo **Nível 1**. Concentre-se. O que deseja?";
 };
 
+const getWelcomeActions = (mentor: MentorType) => {
+  if (mentor === 'naru') {
+    return [
+      "Bora começar xuxuu",
+      "Me ensina um exemplo",
+      "Como funcionam as Casas?"
+    ];
+  }
+  return [
+    "Começar do zero",
+    "Me dê um exemplo de SELECT",
+    "Como funcionam as Casas?"
+  ];
+};
+
 const INITIAL_MESSAGES: Message[] = [
   {
     id: 'welcome',
     role: 'assistant',
     content: getWelcomeMessage('hermione'),
     timestamp: Date.now(),
-    suggestedActions: [
-      "Começar do zero",
-      "Me dê um exemplo de SELECT",
-      "Como funcionam as Casas?"
-    ]
+    suggestedActions: getWelcomeActions('hermione')
   }
 ];
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules_v3.8', 
-  DROPS: 'lellinha_drops_v3.8',
+  MODULES: 'lellinha_modules_v4.0', // Updated to force reload of modules
+  DROPS: 'lellinha_drops_v4.0',
   PROGRESS: 'lellinha_progress',
   ARCHIVES: 'lellinha_archives',
   MENTOR: 'lellinha_active_mentor'
@@ -94,15 +105,21 @@ const App: React.FC = () => {
     localStorage.setItem(STORAGE_KEYS.MENTOR, activeMentor);
   }, [messages, modules, drops, userProgress, archives, activeMentor]);
 
-  // --- DYNAMIC WELCOME MESSAGE ---
+  // --- DYNAMIC WELCOME MESSAGE & ACTIONS ---
   useEffect(() => {
     setMessages(prev => {
       // Check if the first message is the welcome message
       if (prev.length > 0 && prev[0].id === 'welcome') {
         const newContent = getWelcomeMessage(activeMentor);
+        const newActions = getWelcomeActions(activeMentor);
+        
         // Only update if content is different to avoid loop
         if (prev[0].content !== newContent) {
-          const newWelcome = { ...prev[0], content: newContent };
+          const newWelcome = { 
+            ...prev[0], 
+            content: newContent,
+            suggestedActions: newActions
+          };
           return [newWelcome, ...prev.slice(1)];
         }
       }
@@ -143,7 +160,8 @@ const App: React.FC = () => {
       const resetMessage: Message = {
         ...INITIAL_MESSAGES[0],
         content: getWelcomeMessage(activeMentor),
-        timestamp: Date.now()
+        timestamp: Date.now(),
+        suggestedActions: getWelcomeActions(activeMentor)
       };
       setMessages([resetMessage]);
     }
@@ -182,6 +200,11 @@ const App: React.FC = () => {
     if (text === "TIME_TURNER_REQUEST") {
       displayContent = "⏳ Vira-Tempo: Revise algo que eu já aprendi.";
       prompt = "TIME_TURNER_REQUEST";
+    }
+
+    if (text === "OWL_EXAM_REQUEST") {
+      displayContent = "📜 Quero prestar meus N.O.M.s (Prova do Módulo)!";
+      prompt = "OWL_EXAM_REQUEST";
     }
 
     const userMsg: Message = {
@@ -249,11 +272,10 @@ const App: React.FC = () => {
           return prev;
         });
 
-        // 2. Check for Contextual Drop Unlocks (e.g. Completed Module 10 -> Unlock Drop with linkedModuleId 10)
+        // 2. Check for Contextual Drop Unlocks
         setDrops(prevDrops => {
             return prevDrops.map(drop => {
                 if (drop.linkedModuleId === userProgress.currentModuleId && !drop.unlocked) {
-                   // Unlock it!
                    return { ...drop, unlocked: true };
                 }
                 return drop;

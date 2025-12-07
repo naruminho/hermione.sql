@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Loader2, Swords, Hourglass } from 'lucide-react';
+import { Send, Loader2, Swords, Hourglass, ScrollText } from 'lucide-react';
 import { AppState } from '../types';
 
 interface InputAreaProps {
@@ -26,6 +26,12 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
   const handleDuelRequest = () => {
     if (appState !== AppState.GENERATING) {
       onSend("DUEL_MODE_REQUEST");
+    }
+  };
+
+  const handleOWLRequest = () => {
+    if (appState !== AppState.GENERATING) {
+      onSend("OWL_EXAM_REQUEST");
     }
   };
 
@@ -91,7 +97,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
               type="button"
               onClick={handleDuelRequest}
               disabled={appState === AppState.GENERATING}
-              title="Modo Duelo: Bateria de Exercícios"
+              title="Modo Duelo: Bateria de Exercícios Rápidos"
               className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center border border-transparent
                 ${appState === AppState.GENERATING 
                   ? 'text-slate-600 cursor-not-allowed' 
@@ -100,6 +106,22 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
               `}
             >
               <Swords size={18} />
+            </button>
+
+            {/* OWL Exam Button */}
+            <button
+              type="button"
+              onClick={handleOWLRequest}
+              disabled={appState === AppState.GENERATING}
+              title="Prestar N.O.M.s (Prova do Módulo)"
+              className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center border border-transparent
+                ${appState === AppState.GENERATING 
+                  ? 'text-slate-600 cursor-not-allowed' 
+                  : 'bg-slate-800 text-cyan-400 hover:bg-slate-700 hover:text-cyan-300 hover:border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.1)]'
+                }
+              `}
+            >
+              <ScrollText size={18} />
             </button>
 
             {/* Send Button */}
