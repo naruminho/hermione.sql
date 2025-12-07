@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart } from 'lucide-react';
 
-const APP_VERSION = "v3.2";
+const APP_VERSION = "v3.3";
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -123,7 +123,7 @@ const INITIAL_MESSAGES: Message[] = [
   {
     id: 'welcome',
     role: 'assistant',
-    content: "Olá Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo completo para você se tornar uma Engenheira de Dados de elite!\n\nVocê também pode escolher o **Naruminho** como seu monitor ali na barra lateral, se preferir uma abordagem... diferente. \n\nComeçamos pelo **Nível 1**. O que deseja?",
+    content: "Olá Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo completo para você se tornar uma Engenheira de Dados de elite!\n\nVocê também pode escolher o **Naruminho** como seu mentor ali na barra lateral.\n\nComeçamos pelo **Nível 1**. O que deseja?",
     timestamp: Date.now(),
     suggestedActions: [
       "Começar do zero",

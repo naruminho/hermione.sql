@@ -1,8 +1,12 @@
 # Changelog - Jornada da Lellinha 🚀
 
-## v3.0 - Hogwarts EAD & Naru Monitor
+## v3.3 - Personalidade Ajustada
+- **Hermione Impaciente:** Ajuste na personalidade da Hermione para ser mais pedante, impaciente e academicamente rigorosa (usando expressões como "Afff" e "É Levi-ô-sa").
+- **Contraste de Monitores:** A diferença entre a rigidez da Hermione e o carinho do Naruminho agora é extrema.
+
+## v3.1 - v3.2 - Hogwards EAD & Naru Monitor
 - **Rebranding Completo:** O app agora se chama "Hogwarts EAD".
-- **Sistema de Monitores:** Adicionada a opção de alternar entre "Hermione" (Rigorosa) e "Naru" (Carinhoso/Xuxuu).
+- **Sistema de Monitores:** Adicionada a opção de alternar entre "Hermione" (Rigorosa) e "Naruminho" (Carinhoso/Xuxuu).
 - **Personalidade Naru:** Implementada persona que usa "huahua", chama de "amorzinhu" e é extremamente paciente.
 - **Persistência de Monitor:** O app lembra qual monitor foi escolhido por último.
 
