@@ -157,7 +157,9 @@ const App: React.FC = () => {
     }
 
     if (confirm('Deseja arquivar essa conversa na Penseira e iniciar um novo ciclo?')) {
-      const currentModuleTitle = modules.find(m => m.active)?.title || "Geral";
+      const activeModule = modules.find(m => m.active);
+      const currentModuleTitle = activeModule?.title || "Geral";
+      const currentModuleId = activeModule?.id || 1;
       const validMessages = messages.filter(m => !m.isError);
       
       const newArchive: ArchivedSession = {
@@ -174,7 +176,7 @@ const App: React.FC = () => {
         ...INITIAL_MESSAGES[0],
         content: getWelcomeMessage(activeMentor),
         timestamp: Date.now(),
-        suggestedActions: getWelcomeActions(activeMentor)
+        suggestedActions: getWelcomeActions(activeMentor, currentModuleId)
       };
       setMessages([resetMessage]);
       setIsExamActive(false); // Reset exam state on archive
