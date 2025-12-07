@@ -1,11 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateContent } from './services/gemini';
-import { Message, AppState, TableSchema, KnowledgeDrop } from './types';
+import { Message, AppState, TableSchema, KnowledgeDrop, Module, UserProgress } from './types';
 import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2 } from 'lucide-react';
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -85,31 +85,60 @@ const INITIAL_DROPS: KnowledgeDrop[] = [
   { id: '4', title: 'JOIN é caro', description: 'Juntar tabelas exige mover dados pela rede (Shuffle). Evite joins desnecessários!', rarity: 'rare', unlocked: false },
 ];
 
-const MODULES = [
-  { id: 1, title: 'Módulo 1: O Começo de Tudo', subtitle: 'SELECT e o mundo dos dados', active: true },
-  { id: 2, title: 'Módulo 2: Filtrando o Ruído', subtitle: 'WHERE e filtros lógicos', active: false },
-  { id: 3, title: 'Módulo 3: Agrupando Coisas', subtitle: 'GROUP BY e agregações', active: false },
-  { id: 4, title: 'Módulo 4: O Temido JOIN', subtitle: 'Juntando tabelas diferentes', active: false },
-  { id: 5, title: 'Módulo 5: Spark Tricks', subtitle: 'Particionamento e Shards', active: false },
+const INITIAL_MODULES: Module[] = [
+  { id: 1, title: 'Módulo 1: O Começo de Tudo', subtitle: 'SELECT e o mundo dos dados', active: true, completed: false },
+  { id: 2, title: 'Módulo 2: Filtrando o Ruído', subtitle: 'WHERE e filtros lógicos', active: false, completed: false },
+  { id: 3, title: 'Módulo 3: Agrupando Coisas', subtitle: 'GROUP BY e agregações', active: false, completed: false },
+  { id: 4, title: 'Módulo 4: O Temido JOIN', subtitle: 'Juntando tabelas diferentes', active: false, completed: false },
+  { id: 5, title: 'Módulo 5: Spark Tricks', subtitle: 'Particionamento e Shards', active: false, completed: false },
 ];
 
+const INITIAL_MESSAGES: Message[] = [
+  {
+    id: 'welcome',
+    role: 'assistant',
+    content: "Olá Lellinha! Eu sou a **Hermione**, sua monitora de dados! 🧙‍♀️✨\n\nSQL é apenas a língua mágica que usamos para conversar com os dados. Não se preocupe, vamos começar do **zero absoluto**.\n\nEscolha uma das opções abaixo para começarmos!",
+    timestamp: Date.now(),
+    suggestedActions: [
+      "O que é um SELECT?",
+      "Para que serve um banco de dados?",
+      "Como vejo os alunos?"
+    ]
+  }
+];
+
+const STORAGE_KEYS = {
+  MESSAGES: 'lellinha_messages',
+  MODULES: 'lellinha_modules',
+  PROGRESS: 'lellinha_progress'
+};
+
 const App: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'welcome',
-      role: 'assistant',
-      content: "Olá Lellinha! Eu sou a **Hermione**, sua monitora de dados! 🧙‍♀️✨\n\nSQL é apenas a língua mágica que usamos para conversar com os dados. Não se preocupe, vamos começar do **zero absoluto**.\n\nEscolha uma das opções abaixo para começarmos!",
-      timestamp: Date.now(),
-      suggestedActions: [
-        "O que é um SELECT?",
-        "Para que serve um banco de dados?",
-        "Como vejo os alunos?"
-      ]
-    }
-  ]);
+  // --- STATE ---
+  const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
+  const [modules, setModules] = useState<Module[]>(INITIAL_MODULES);
+  const [userProgress, setUserProgress] = useState<UserProgress>({ xp: 0, level: 1, currentModuleId: 1 });
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // --- PERSISTENCE (LOAD) ---
+  useEffect(() => {
+    const loadedMessages = localStorage.getItem(STORAGE_KEYS.MESSAGES);
+    const loadedModules = localStorage.getItem(STORAGE_KEYS.MODULES);
+    const loadedProgress = localStorage.getItem(STORAGE_KEYS.PROGRESS);
+
+    if (loadedMessages) setMessages(JSON.parse(loadedMessages));
+    if (loadedModules) setModules(JSON.parse(loadedModules));
+    if (loadedProgress) setUserProgress(JSON.parse(loadedProgress));
+  }, []);
+
+  // --- PERSISTENCE (SAVE) ---
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(messages));
+    localStorage.setItem(STORAGE_KEYS.MODULES, JSON.stringify(modules));
+    localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(userProgress));
+  }, [messages, modules, userProgress]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -119,27 +148,101 @@ const App: React.FC = () => {
     scrollToBottom();
   }, [messages]);
 
+  // --- LOGIC ---
+
+  const handleClearHistory = () => {
+    if (confirm('Tem certeza? Isso vai apagar toda a sua conversa.')) {
+      setMessages(INITIAL_MESSAGES);
+      setModules(INITIAL_MODULES);
+      setUserProgress({ xp: 0, level: 1, currentModuleId: 1 });
+      localStorage.clear();
+      window.location.reload();
+    }
+  };
+
+  const parseHiddenTags = (text: string) => {
+    let cleanText = text;
+    let xpGained = 0;
+    let unlockNext = false;
+
+    // Check for XP tag
+    if (cleanText.includes('---XP:')) {
+      const match = cleanText.match(/---XP:(\d+)---/);
+      if (match) {
+        xpGained = parseInt(match[1]);
+        cleanText = cleanText.replace(/---XP:\d+---/, '');
+      }
+    }
+
+    // Check for Unlock tag
+    if (cleanText.includes('---UNLOCK_NEXT---')) {
+      unlockNext = true;
+      cleanText = cleanText.replace('---UNLOCK_NEXT---', '');
+    }
+
+    return { cleanText, xpGained, unlockNext };
+  };
+
   const handleSend = async (text: string) => {
+    let displayContent = text;
+    let prompt = text;
+
+    // Handle Drill Mode Request (Hidden from UI but sent to AI)
+    if (text === "DRILL_MODE_REQUEST") {
+      displayContent = "🧙‍♀️ Hermione, me mande um exercício prático agora!";
+      prompt = "DRILL_MODE_REQUEST";
+    }
+
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
-      content: text,
+      content: displayContent,
       timestamp: Date.now()
     };
+    
     setMessages(prev => [...prev, userMsg]);
     setAppState(AppState.GENERATING);
 
-    const result = await generateContent(text);
+    const result = await generateContent(prompt);
 
-    // Split Response from Options
+    // 1. Split Response from Options
     const parts = result.text.split('---OPTIONS---');
-    const cleanContent = parts[0].trim();
+    let rawContent = parts[0].trim();
     const rawOptions = parts[1] ? parts[1].trim().split('\n').filter(s => s.trim().length > 0) : [];
+
+    // 2. Parse Hidden Gamification Tags
+    const { cleanText, xpGained, unlockNext } = parseHiddenTags(rawContent);
+
+    // 3. Update Progress if needed
+    if (xpGained > 0) {
+      setUserProgress(prev => ({ ...prev, xp: prev.xp + xpGained }));
+    }
+
+    if (unlockNext) {
+      setModules(prev => {
+        const nextId = userProgress.currentModuleId + 1;
+        // Check if next module exists and is not active
+        const nextModuleExists = prev.find(m => m.id === nextId && !m.active);
+        
+        if (nextModuleExists) {
+          return prev.map(m => {
+             if (m.id === userProgress.currentModuleId) return { ...m, completed: true };
+             if (m.id === nextId) return { ...m, active: true };
+             return m;
+          });
+        }
+        return prev;
+      });
+      
+      if (modules.find(m => m.id === userProgress.currentModuleId + 1)) {
+          setUserProgress(prev => ({ ...prev, currentModuleId: prev.currentModuleId + 1 }));
+      }
+    }
 
     const botMsg: Message = {
       id: (Date.now() + 1).toString(),
       role: 'assistant',
-      content: cleanContent,
+      content: cleanText,
       timestamp: Date.now(),
       isError: !!result.error,
       suggestedActions: rawOptions
@@ -148,6 +251,10 @@ const App: React.FC = () => {
     setMessages(prev => [...prev, botMsg]);
     setAppState(AppState.IDLE);
   };
+
+  // Mana bar calculation (just visual max 500 for level 1)
+  const maxMana = 500;
+  const manaPercentage = Math.min((userProgress.xp / maxMana) * 100, 100);
 
   return (
     <div className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
@@ -167,15 +274,19 @@ const App: React.FC = () => {
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           <h3 className="text-xs font-semibold text-slate-500 uppercase tracking-wider pl-2">Sua Trilha Mágica</h3>
           <div className="space-y-2">
-            {MODULES.map((mod) => (
-              <div key={mod.id} className={`p-3 rounded-xl border transition-all cursor-pointer ${
+            {modules.map((mod) => (
+              <div key={mod.id} className={`p-3 rounded-xl border transition-all ${
                 mod.active 
                   ? 'bg-purple-900/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.1)]' 
-                  : 'bg-slate-800/30 border-transparent hover:bg-slate-800 hover:border-slate-700 opacity-60'
+                  : mod.completed
+                    ? 'bg-emerald-900/10 border-emerald-500/30'
+                    : 'bg-slate-800/30 border-transparent opacity-60'
               }`}>
                 <div className="flex items-center justify-between mb-1">
-                  <span className={`text-xs font-bold ${mod.active ? 'text-purple-400' : 'text-slate-500'}`}>
-                    {mod.active ? 'EM PROGRESSO' : 'BLOQUEADO'}
+                  <span className={`text-xs font-bold ${
+                      mod.active ? 'text-purple-400' : mod.completed ? 'text-emerald-400' : 'text-slate-500'
+                    }`}>
+                    {mod.active ? 'EM ANDAMENTO' : mod.completed ? 'COMPLETO' : 'BLOQUEADO'}
                   </span>
                   {mod.active && <div className="w-2 h-2 rounded-full bg-purple-500 animate-pulse"></div>}
                 </div>
@@ -187,27 +298,38 @@ const App: React.FC = () => {
         </div>
 
         {/* User Profile / Mana Bar */}
-        <div className="p-4 border-t border-slate-800">
+        <div className="p-4 border-t border-slate-800 space-y-3">
            <div className="bg-slate-800/50 rounded-xl p-3">
              <div className="flex items-center gap-3 mb-3">
                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-sm font-bold shadow-md">L</div>
                <div className="flex-1 min-w-0">
                  <p className="text-sm font-bold text-white truncate">Lellinha</p>
-                 <p className="text-[10px] text-slate-400">Aprendiz de Feiticeira</p>
+                 <p className="text-[10px] text-slate-400">Nível {userProgress.level} • {userProgress.xp} XP</p>
                </div>
              </div>
              
              {/* Mana Bar */}
              <div className="space-y-1">
                 <div className="flex justify-between text-[10px] font-medium">
-                  <span className="text-blue-300 flex items-center gap-1"><Zap size={10}/> Mana (Tokens)</span>
-                  <span className="text-blue-300">80%</span>
+                  <span className="text-blue-300 flex items-center gap-1"><Zap size={10}/> Mana (XP)</span>
+                  <span className="text-blue-300">{Math.floor(manaPercentage)}%</span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
-                  <div className="h-full bg-blue-500 w-[80%] rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                  <div 
+                    className="h-full bg-blue-500 rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)] transition-all duration-1000"
+                    style={{ width: `${manaPercentage}%` }}
+                  ></div>
                 </div>
              </div>
            </div>
+
+           <button 
+             onClick={handleClearHistory}
+             className="w-full flex items-center justify-center gap-2 p-2 text-xs text-red-400 hover:bg-red-950/30 rounded-lg transition-colors"
+           >
+             <Trash2 size={12} />
+             Resetar Progresso
+           </button>
         </div>
       </aside>
 

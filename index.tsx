@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css';
+// import './index.css'; // Commented out to prevent crash in Playground/Browser preview
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {

@@ -31,3 +31,17 @@ export interface KnowledgeDrop {
   rarity: 'common' | 'rare' | 'legendary';
   unlocked: boolean;
 }
+
+export interface Module {
+  id: number;
+  title: string;
+  subtitle: string;
+  active: boolean;
+  completed: boolean;
+}
+
+export interface UserProgress {
+  xp: number; // Mana
+  level: number;
+  currentModuleId: number;
+}
