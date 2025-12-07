@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-// import './index.css'; // Removed to prevent browser MIME type errors in preview
+import './index.css';
 
 const rootElement = document.getElementById('root');
 if (!rootElement) {
