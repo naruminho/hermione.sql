@@ -1,5 +1,11 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v3.8 - Refatoração Arquitetural e Contexto Rico
+- **Centralização:** Criação do arquivo `constants.ts` para ser a fonte única da verdade sobre Currículo, Drops e Tabelas.
+- **Inteligência Aumentada:** O Prompt de Sistema agora recebe o Schema Completo do banco (com tipos de colunas), permitindo que a IA gere queries perfeitas.
+- **Desbloqueio Contextual:** Drops (Sapos) agora podem ser vinculados a módulos específicos (ex: Drop de NULL desbloqueia ao terminar o módulo de NULL), não apenas por nível.
+- **Segurança:** Adicionado tratamento de erro (`try-catch`) na leitura do `localStorage`.
+
 ## v3.7 - Módulo Distinct e Reset
 - **Novo Módulo:** Inclusão do módulo dedicado "O Feitiço da Unicidade (DISTINCT)" no Nível 1.
 - **Storage Reset:** Atualização de chave de persistência para forçar o carregamento da nova grade curricular.

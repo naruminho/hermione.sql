@@ -33,6 +33,7 @@ export interface KnowledgeDrop {
   rarity: 'common' | 'rare' | 'legendary';
   unlocked: boolean;
   minLevel: number;
+  linkedModuleId?: number; // New: Unlock when specific module is finished
 }
 
 export interface Module {

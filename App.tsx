@@ -1,124 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { generateContent } from './services/gemini';
-import { Message, AppState, TableSchema, KnowledgeDrop, Module, UserProgress, ArchivedSession, MentorType } from './types';
+import { Message, AppState, Module, UserProgress, ArchivedSession, MentorType, KnowledgeDrop } from './types';
+import { INITIAL_MODULES, INITIAL_DROPS, ALL_TABLES } from './constants';
 import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
 
-const APP_VERSION = "v3.7";
-
-const ALL_TABLES: TableSchema[] = [
-  {
-    tableName: 'hogw_db.talunos',
-    columns: [
-      { name: 'id', type: 'INT', description: 'Identificador único do aluno (PK).', isKey: true },
-      { name: 'nome', type: 'STRING', description: 'Nome do bruxo.' },
-      { name: 'casa_id', type: 'INT', description: 'FK. Liga com tcasas.id', isKey: true },
-      { name: 'ano', type: 'INT', description: 'Ano letivo (1-7).' },
-      { name: 'patrono', type: 'STRING', description: 'Forma do patrono. Pode ser NULL.' },
-      { name: 'nota_media', type: 'DECIMAL', description: 'Média geral.' },
-      { name: 'email', type: 'STRING', description: 'Contato mágico.' },
-    ]
-  },
-  {
-    tableName: 'hogw_db.taulas',
-    columns: [
-      { name: 'id', type: 'INT', description: 'ID da aula.', isKey: true },
-      { name: 'aluno_id', type: 'INT', description: 'Quem assistiu (FK).', isKey: true },
-      { name: 'disciplina_id', type: 'INT', description: 'Qual matéria (FK).', isKey: true },
-      { name: 'nota', type: 'DECIMAL', description: 'Nota obtida na aula.' },
-      { name: 'data', type: 'DATE', description: 'Dia da aula.' },
-      { name: 'presente', type: 'BOOLEAN', description: '1 = Presente, 0 = Matou aula.' },
-    ]
-  },
-  {
-    tableName: 'hogw_db.tcasas',
-    columns: [
-      { name: 'id', type: 'INT', description: 'ID da casa (PK).', isKey: true },
-      { name: 'nome', type: 'STRING', description: 'Grifinória, Sonserina...' },
-      { name: 'fundador', type: 'STRING', description: 'Quem criou a casa.' },
-      { name: 'sala_comum', type: 'STRING', description: 'Localização.' },
-    ]
-  },
-  {
-    tableName: 'hogw_db.tdisciplinas',
-    columns: [
-      { name: 'id', type: 'INT', description: 'ID da matéria.', isKey: true },
-      { name: 'nome', type: 'STRING', description: 'Poções, DCAT...' },
-      { name: 'professor_id', type: 'INT', description: 'Quem ensina (FK).', isKey: true },
-      { name: 'ano_minimo', type: 'INT', description: 'Pré-requisito de ano.' },
-    ]
-  },
-  {
-    tableName: 'hogw_db.tfeiticos',
-    columns: [
-      { name: 'id', type: 'INT', description: 'ID do feitiço.', isKey: true },
-      { name: 'nome', type: 'STRING', description: 'Ex: Wingardium Leviosa.' },
-      { name: 'dificuldade', type: 'STRING', description: 'Básico, Interm., Avançado.' },
-      { name: 'categoria', type: 'STRING', description: 'Ataque, Defesa, Utilidade.' },
-    ]
-  },
-  {
-    tableName: 'hogw_db.tprofessores',
-    columns: [
-      { name: 'id', type: 'INT', description: 'ID do professor.', isKey: true },
-      { name: 'nome', type: 'STRING', description: 'Ex: Severus Snape.' },
-      { name: 'disciplina_preferencia', type: 'STRING', description: 'Especialidade.' },
-      { name: 'senioridade', type: 'INT', description: 'Anos de experiência.' },
-    ]
-  },
-  {
-    tableName: 'hogw_db.tregistros',
-    columns: [
-      { name: 'id', type: 'INT', description: 'Log de aprendizado.', isKey: true },
-      { name: 'aluno_id', type: 'INT', description: 'Quem aprendeu (FK).', isKey: true },
-      { name: 'feitico_id', type: 'INT', description: 'O que aprendeu (FK).', isKey: true },
-      { name: 'dominio', type: 'INT', description: 'Nível de domínio (0-10).' },
-    ]
-  },
-];
-
-const INITIAL_DROPS: KnowledgeDrop[] = [
-  { id: '0', title: 'O Ponto e Vírgula', description: 'Em SQL, o ; é como o "Malfeito Feito". Ele diz ao banco que seu comando acabou. Sem ele, a magia não acontece!', rarity: 'common', unlocked: true, minLevel: 1 },
-  { id: '2', title: 'Cuidado com Strings', description: 'Comparar texto (Strings) é muito mais lento que comparar números. Prefira IDs sempre que der!', rarity: 'common', unlocked: false, minLevel: 1 },
-  { id: '3', title: 'O Perigo do SELECT *', description: 'Em bancos gigantes, trazer todas as colunas pode travar o cluster inteiro e custar caro!', rarity: 'rare', unlocked: false, minLevel: 1 },
-  { id: '5', title: 'NULL: O Dementador', description: 'NULL não é zero e nem espaço vazio. É ausência de alma! Qualquer conta com NULL vira NULL (1 + NULL = NULL).', rarity: 'rare', unlocked: false, minLevel: 3 },
-  { id: '4', title: 'JOIN é caro', description: 'Juntar tabelas exige mover dados pela rede (Shuffle). Evite joins desnecessários!', rarity: 'rare', unlocked: false, minLevel: 4 },
-  { id: '7', title: 'Parquet vs CSV', description: 'Parquet é colunar e comprimido. É como uma bolsa da Hermione: cabe muito mais coisa e você acha o item rápido sem tirar tudo pra fora.', rarity: 'common', unlocked: false, minLevel: 5 },
-  { id: '1', title: 'O Segredo do Lazy', description: 'O Spark (motor do Databricks) é preguiçoso. Ele não processa nada até você pedir para mostrar (Action).', rarity: 'legendary', unlocked: false, minLevel: 5 },
-  { id: '6', title: 'Partitioning (Horcruxes)', description: 'Dividir dados em pastas (ex: por ano) faz o Spark ler só o que precisa. É como esconder pedaços da alma para não morrer lendo tudo.', rarity: 'legendary', unlocked: false, minLevel: 5 },
-  { id: '8', title: 'Idempotência', description: 'Seu código deve poder rodar 1000 vezes sem duplicar dados. Se rodar duas vezes e criar dois Harrys, falhou!', rarity: 'legendary', unlocked: false, minLevel: 5 },
-];
-
-const INITIAL_MODULES: Module[] = [
-  // NÍVEL 1: FUNDAMENTOS
-  { id: 1, title: 'Nível 1: Feitiços Básicos', subtitle: 'SELECT, FROM, LIMIT', active: true, completed: false },
-  { id: 2, title: 'Nível 1: O Feitiço da Unicidade', subtitle: 'DISTINCT (Removendo duplicatas)', active: false, completed: false },
-  { id: 3, title: 'Nível 1: Filtros de Proteção', subtitle: 'WHERE, AND, OR, IN', active: false, completed: false },
-  { id: 4, title: 'Nível 1: Organizando o Salão', subtitle: 'ORDER BY ASC/DESC', active: false, completed: false },
-  
-  // NÍVEL 2: ARITMÂNCIA (Agregações)
-  { id: 5, title: 'Nível 2: Contando Estrelas', subtitle: 'COUNT, SUM, AVG, MIN, MAX', active: false, completed: false },
-  { id: 6, title: 'Nível 2: O Poder do Grupo', subtitle: 'GROUP BY (O divisor de águas)', active: false, completed: false },
-  { id: 7, title: 'Nível 2: Filtros Pós-Agrupamento', subtitle: 'HAVING vs WHERE', active: false, completed: false },
-  
-  // NÍVEL 3: TRANSFIGURAÇÃO (Manipulação)
-  { id: 8, title: 'Nível 3: Lógica Condicional', subtitle: 'CASE WHEN (O "Se" do SQL)', active: false, completed: false },
-  { id: 9, title: 'Nível 3: Lidando com o Tempo', subtitle: 'YEAR(), MONTH(), DATEDIFF()', active: false, completed: false },
-  { id: 10, title: 'Nível 3: Expelliarmus NULLs', subtitle: 'COALESCE e tratamento de nulos', active: false, completed: false },
-  
-  // NÍVEL 4: POÇÕES (Relacionamentos)
-  { id: 11, title: 'Nível 4: Misturando Caldeirões', subtitle: 'INNER JOIN (A interseção)', active: false, completed: false },
-  { id: 12, title: 'Nível 4: Buscando os Solitários', subtitle: 'LEFT JOIN e RIGHT JOIN', active: false, completed: false },
-  { id: 13, title: 'Nível 4: Unindo Forças', subtitle: 'UNION e UNION ALL', active: false, completed: false },
-  
-  // NÍVEL 5: MAGIA ANTIGA (Engenharia Avançada)
-  { id: 14, title: 'Nível 5: Magia de Janela', subtitle: 'Window Functions (ROW_NUMBER, RANK)', active: false, completed: false },
-  { id: 15, title: 'Nível 5: Organizando o Caos', subtitle: 'CTEs (WITH) e Subqueries', active: false, completed: false },
-  { id: 16, title: 'Nível 5: Segredos do Spark', subtitle: 'Particionamento e Performance', active: false, completed: false },
-];
+const APP_VERSION = "v3.8";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
@@ -143,7 +33,8 @@ const INITIAL_MESSAGES: Message[] = [
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules_v3.7', // Version bumped to reset curriculum
+  MODULES: 'lellinha_modules_v3.8', 
+  DROPS: 'lellinha_drops_v3.8',
   PROGRESS: 'lellinha_progress',
   ARCHIVES: 'lellinha_archives',
   MENTOR: 'lellinha_active_mentor'
@@ -153,6 +44,7 @@ const App: React.FC = () => {
   // --- STATE ---
   const [messages, setMessages] = useState<Message[]>(INITIAL_MESSAGES);
   const [modules, setModules] = useState<Module[]>(INITIAL_MODULES);
+  const [drops, setDrops] = useState<KnowledgeDrop[]>(INITIAL_DROPS);
   const [userProgress, setUserProgress] = useState<UserProgress>({ xp: 0, level: 1, currentModuleId: 1 });
   const [archives, setArchives] = useState<ArchivedSession[]>([]);
   const [activeMentor, setActiveMentor] = useState<MentorType>('hermione');
@@ -163,29 +55,32 @@ const App: React.FC = () => {
   
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  // --- PERSISTENCE (LOAD) ---
+  // --- PERSISTENCE (LOAD) WITH SAFETY ---
   useEffect(() => {
-    const loadedMessages = localStorage.getItem(STORAGE_KEYS.MESSAGES);
-    const loadedModules = localStorage.getItem(STORAGE_KEYS.MODULES);
-    const loadedProgress = localStorage.getItem(STORAGE_KEYS.PROGRESS);
-    const loadedArchives = localStorage.getItem(STORAGE_KEYS.ARCHIVES);
-    const loadedMentor = localStorage.getItem(STORAGE_KEYS.MENTOR);
+    const safeParse = (key: string, fallback: any) => {
+      try {
+        const item = localStorage.getItem(key);
+        return item ? JSON.parse(item) : fallback;
+      } catch (e) {
+        console.warn(`Error parsing ${key} from localStorage`, e);
+        return fallback;
+      }
+    };
 
-    if (loadedMessages) setMessages(JSON.parse(loadedMessages));
-    if (loadedModules) {
-       const parsed = JSON.parse(loadedModules);
-       // Check if loaded modules match current structure length (basic check)
-       if (parsed.length !== INITIAL_MODULES.length) {
-          setModules(INITIAL_MODULES);
-       } else {
-          setModules(parsed);
-       }
+    setMessages(safeParse(STORAGE_KEYS.MESSAGES, INITIAL_MESSAGES));
+    
+    // Validate modules structure length
+    const storedModules = safeParse(STORAGE_KEYS.MODULES, INITIAL_MODULES);
+    if (storedModules.length !== INITIAL_MODULES.length) {
+      setModules(INITIAL_MODULES);
     } else {
-       setModules(INITIAL_MODULES);
+      setModules(storedModules);
     }
-    if (loadedProgress) setUserProgress(JSON.parse(loadedProgress));
-    if (loadedArchives) setArchives(JSON.parse(loadedArchives));
-    if (loadedMentor) setActiveMentor(loadedMentor as MentorType);
+
+    setDrops(safeParse(STORAGE_KEYS.DROPS, INITIAL_DROPS));
+    setUserProgress(safeParse(STORAGE_KEYS.PROGRESS, { xp: 0, level: 1, currentModuleId: 1 }));
+    setArchives(safeParse(STORAGE_KEYS.ARCHIVES, []));
+    setActiveMentor(localStorage.getItem(STORAGE_KEYS.MENTOR) as MentorType || 'hermione');
   }, []);
 
   // --- PERSISTENCE (SAVE) ---
@@ -193,10 +88,11 @@ const App: React.FC = () => {
     const validMessages = messages.filter(m => !m.isError);
     localStorage.setItem(STORAGE_KEYS.MESSAGES, JSON.stringify(validMessages));
     localStorage.setItem(STORAGE_KEYS.MODULES, JSON.stringify(modules));
+    localStorage.setItem(STORAGE_KEYS.DROPS, JSON.stringify(drops));
     localStorage.setItem(STORAGE_KEYS.PROGRESS, JSON.stringify(userProgress));
     localStorage.setItem(STORAGE_KEYS.ARCHIVES, JSON.stringify(archives));
     localStorage.setItem(STORAGE_KEYS.MENTOR, activeMentor);
-  }, [messages, modules, userProgress, archives, activeMentor]);
+  }, [messages, modules, drops, userProgress, archives, activeMentor]);
 
   // --- DYNAMIC WELCOME MESSAGE ---
   useEffect(() => {
@@ -337,10 +233,12 @@ const App: React.FC = () => {
       }
 
       if (unlockNext) {
+        // Unlock next module
+        const nextId = userProgress.currentModuleId + 1;
+        
+        // 1. Advance Module
         setModules(prev => {
-          const nextId = userProgress.currentModuleId + 1;
           const nextModuleExists = prev.find(m => m.id === nextId && !m.active);
-          
           if (nextModuleExists) {
             return prev.map(m => {
               if (m.id === userProgress.currentModuleId) return { ...m, completed: true };
@@ -350,11 +248,23 @@ const App: React.FC = () => {
           }
           return prev;
         });
+
+        // 2. Check for Contextual Drop Unlocks (e.g. Completed Module 10 -> Unlock Drop with linkedModuleId 10)
+        setDrops(prevDrops => {
+            return prevDrops.map(drop => {
+                if (drop.linkedModuleId === userProgress.currentModuleId && !drop.unlocked) {
+                   // Unlock it!
+                   return { ...drop, unlocked: true };
+                }
+                return drop;
+            });
+        });
         
-        const nextMod = modules.find(m => m.id === userProgress.currentModuleId + 1);
+        // 3. Update Progress (Level Up)
+        const nextMod = modules.find(m => m.id === nextId);
         if (nextMod) {
             setUserProgress(prev => {
-                const newLevel = Math.ceil((prev.currentModuleId + 1) / 3); // Approx formula, logic might vary
+                const newLevel = Math.ceil((prev.currentModuleId + 1) / 3); 
                 return { 
                     ...prev, 
                     currentModuleId: prev.currentModuleId + 1,
@@ -652,12 +562,16 @@ const App: React.FC = () => {
               Sapos de Chocolate (Drops)
             </h3>
             <div className="space-y-3">
-              {INITIAL_DROPS.map(drop => {
+              {drops.map(drop => {
                 const isLevelLocked = userProgress.level < drop.minLevel;
+                const isModuleLocked = drop.linkedModuleId ? !modules.find(m => m.id === drop.linkedModuleId)?.completed : false;
                 
+                // Drop is locked if Level Requirement not met OR Module requirement not met
+                const isLocked = !drop.unlocked && (isLevelLocked || isModuleLocked);
+
                 return (
                   <div key={drop.id} className={`relative p-3 rounded-lg border transition-all ${
-                    drop.unlocked 
+                    !isLocked 
                       ? 'bg-slate-800 border-slate-700' 
                       : 'bg-slate-900/50 border-slate-800 opacity-50 grayscale'
                   }`}>
@@ -668,17 +582,20 @@ const App: React.FC = () => {
                        }`} />
                        <div>
                          <h4 className="text-xs font-bold text-slate-200">{drop.title}</h4>
-                         {drop.unlocked ? (
+                         {!isLocked ? (
                            <p className="text-[10px] text-slate-400 mt-1 leading-relaxed">{drop.description}</p>
                          ) : (
                            <div className="mt-1 flex items-center gap-1">
-                               {isLevelLocked ? (
+                               {drop.linkedModuleId ? (
+                                   <span className="text-[10px] text-indigo-400 flex items-center gap-1 font-semibold">
+                                     <Lock size={8} />
+                                     Requer Módulo {drop.linkedModuleId}
+                                   </span>
+                               ) : (
                                    <span className="text-[10px] text-red-400 flex items-center gap-1 font-semibold">
                                      <Lock size={8} />
                                      Requer Nível {drop.minLevel}
                                    </span>
-                               ) : (
-                                   <p className="text-[10px] text-slate-600 italic">??? Bloqueado</p>
                                )}
                            </div>
                          )}

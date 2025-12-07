@@ -1,5 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
 import { Message, MentorType } from "../types";
+import { generateCurriculumPrompt, generateSchemaPrompt } from "../constants";
 
 // Safe initialization of API Key
 const getApiKey = () => {
@@ -28,36 +29,17 @@ export interface GenerationResult {
   error?: string;
 }
 
-const COMMON_CURRICULUM = `
-ESTRUTURA OBRIGATÓRIA DO CURSO (HOGWARTS DATA ENGINEERING):
-Você deve seguir estritamente esta ordem. Não pule etapas.
+const COMMON_CURRICULUM = generateCurriculumPrompt();
 
-NÍVEL 1: FUNDAMENTOS
-1. Feitiços Básicos (SELECT, FROM, LIMIT)
-2. O Feitiço da Unicidade (DISTINCT - Removendo duplicatas)
-3. Filtros de Proteção (WHERE, AND, OR, IN)
-4. Organizando o Salão (ORDER BY ASC/DESC)
+const TECHNICAL_ENVIRONMENT = `
+AMBIENTE TÉCNICO (DATABASE SCHEMA):
+O banco de dados é 'hogw_db' (Databricks/SparkSQL).
+Abaixo estão os detalhes exatos das tabelas e colunas. Use apenas estas colunas.
 
-NÍVEL 2: ARITMÂNCIA (Agregações)
-5. Contando Estrelas (COUNT, SUM, AVG, MIN, MAX)
-6. O Poder do Grupo (GROUP BY - O conceito mais difícil do iniciante)
-7. Filtros Pós-Agrupamento (HAVING vs WHERE)
+${generateSchemaPrompt()}
+`;
 
-NÍVEL 3: TRANSFIGURAÇÃO (Manipulação)
-8. Lógica Condicional (CASE WHEN)
-9. Lidando com o Tempo (YEAR, MONTH, DATEDIFF)
-10. Expelliarmus NULLs (COALESCE e tratamento de nulos)
-
-NÍVEL 4: POÇÕES (Relacionamentos)
-11. Misturando Caldeirões (INNER JOIN)
-12. Buscando os Solitários (LEFT JOIN, RIGHT JOIN)
-13. Unindo Forças (UNION, UNION ALL)
-
-NÍVEL 5: MAGIA ANTIGA (Engenharia Avançada)
-14. Magia de Janela (Window Functions: ROW_NUMBER, RANK)
-15. Organizando o Caos (CTEs/WITH)
-16. Segredos do Spark (Particionamento)
-
+const BASE_INSTRUCTIONS = `
 CRITÉRIO DE APROVAÇÃO (COMO PASSAR DE NÍVEL):
 1. Só envie a tag \`---UNLOCK_NEXT---\` se a aluna **ACERTAR UM EXERCÍCIO DE CÓDIGO**.
 2. Papo furado ou perguntas teóricas NÃO desbloqueiam módulo. Ela tem que escrever SQL.
@@ -181,7 +163,7 @@ export const generateContent = async (
       config: {
         maxOutputTokens: 1000,
         thinkingConfig: { thinkingBudget: 0 },
-        systemInstruction: `${personaInstruction}\n\n${COMMON_CURRICULUM}\n\nAmbiente Técnico: Database 'hogw_db'. Tabelas: talunos, taulas, tcasas, tdisciplinas, tfeiticos, tprofessores, tregistros.`,
+        systemInstruction: `${personaInstruction}\n\n${COMMON_CURRICULUM}\n\n${TECHNICAL_ENVIRONMENT}\n\n${BASE_INSTRUCTIONS}`,
       }
     });
 
