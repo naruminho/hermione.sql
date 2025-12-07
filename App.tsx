@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock } from 'lucide-react';
 
-const APP_VERSION = "v2.1";
+const APP_VERSION = "v2.2";
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -290,7 +290,11 @@ const App: React.FC = () => {
 
       const parts = result.text.split('---OPTIONS---');
       let rawContent = parts[0].trim();
-      const rawOptions = parts[1] ? parts[1].trim().split('\n').filter(s => s.trim().length > 0) : [];
+      
+      // Safety Filter: Ensure no hidden tags leaked into the suggested actions
+      const rawOptions = parts[1] 
+        ? parts[1].trim().split('\n').filter(s => s.trim().length > 0 && !s.includes('---')) 
+        : [];
 
       const { cleanText, xpGained, unlockNext } = parseHiddenTags(rawContent);
 
