@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart } from 'lucide-react';
 
-const APP_VERSION = "v3.5";
+const APP_VERSION = "v3.7";
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -94,36 +94,44 @@ const INITIAL_DROPS: KnowledgeDrop[] = [
 
 const INITIAL_MODULES: Module[] = [
   // NÍVEL 1: FUNDAMENTOS
-  { id: 1, title: 'Nível 1: Feitiços Básicos', subtitle: 'SELECT, FROM, DISTINCT, LIMIT', active: true, completed: false },
-  { id: 2, title: 'Nível 1: Filtros de Proteção', subtitle: 'WHERE, AND, OR, IN', active: false, completed: false },
-  { id: 3, title: 'Nível 1: Organizando o Salão', subtitle: 'ORDER BY ASC/DESC', active: false, completed: false },
+  { id: 1, title: 'Nível 1: Feitiços Básicos', subtitle: 'SELECT, FROM, LIMIT', active: true, completed: false },
+  { id: 2, title: 'Nível 1: O Feitiço da Unicidade', subtitle: 'DISTINCT (Removendo duplicatas)', active: false, completed: false },
+  { id: 3, title: 'Nível 1: Filtros de Proteção', subtitle: 'WHERE, AND, OR, IN', active: false, completed: false },
+  { id: 4, title: 'Nível 1: Organizando o Salão', subtitle: 'ORDER BY ASC/DESC', active: false, completed: false },
   
   // NÍVEL 2: ARITMÂNCIA (Agregações)
-  { id: 4, title: 'Nível 2: Contando Estrelas', subtitle: 'COUNT, SUM, AVG, MIN, MAX', active: false, completed: false },
-  { id: 5, title: 'Nível 2: O Poder do Grupo', subtitle: 'GROUP BY (O divisor de águas)', active: false, completed: false },
-  { id: 6, title: 'Nível 2: Filtros Pós-Agrupamento', subtitle: 'HAVING vs WHERE', active: false, completed: false },
+  { id: 5, title: 'Nível 2: Contando Estrelas', subtitle: 'COUNT, SUM, AVG, MIN, MAX', active: false, completed: false },
+  { id: 6, title: 'Nível 2: O Poder do Grupo', subtitle: 'GROUP BY (O divisor de águas)', active: false, completed: false },
+  { id: 7, title: 'Nível 2: Filtros Pós-Agrupamento', subtitle: 'HAVING vs WHERE', active: false, completed: false },
   
   // NÍVEL 3: TRANSFIGURAÇÃO (Manipulação)
-  { id: 7, title: 'Nível 3: Lógica Condicional', subtitle: 'CASE WHEN (O "Se" do SQL)', active: false, completed: false },
-  { id: 8, title: 'Nível 3: Lidando com o Tempo', subtitle: 'YEAR(), MONTH(), DATEDIFF()', active: false, completed: false },
-  { id: 9, title: 'Nível 3: Expelliarmus NULLs', subtitle: 'COALESCE e tratamento de nulos', active: false, completed: false },
+  { id: 8, title: 'Nível 3: Lógica Condicional', subtitle: 'CASE WHEN (O "Se" do SQL)', active: false, completed: false },
+  { id: 9, title: 'Nível 3: Lidando com o Tempo', subtitle: 'YEAR(), MONTH(), DATEDIFF()', active: false, completed: false },
+  { id: 10, title: 'Nível 3: Expelliarmus NULLs', subtitle: 'COALESCE e tratamento de nulos', active: false, completed: false },
   
   // NÍVEL 4: POÇÕES (Relacionamentos)
-  { id: 10, title: 'Nível 4: Misturando Caldeirões', subtitle: 'INNER JOIN (A interseção)', active: false, completed: false },
-  { id: 11, title: 'Nível 4: Buscando os Solitários', subtitle: 'LEFT JOIN e RIGHT JOIN', active: false, completed: false },
-  { id: 12, title: 'Nível 4: Unindo Forças', subtitle: 'UNION e UNION ALL', active: false, completed: false },
+  { id: 11, title: 'Nível 4: Misturando Caldeirões', subtitle: 'INNER JOIN (A interseção)', active: false, completed: false },
+  { id: 12, title: 'Nível 4: Buscando os Solitários', subtitle: 'LEFT JOIN e RIGHT JOIN', active: false, completed: false },
+  { id: 13, title: 'Nível 4: Unindo Forças', subtitle: 'UNION e UNION ALL', active: false, completed: false },
   
   // NÍVEL 5: MAGIA ANTIGA (Engenharia Avançada)
-  { id: 13, title: 'Nível 5: Magia de Janela', subtitle: 'Window Functions (ROW_NUMBER, RANK)', active: false, completed: false },
-  { id: 14, title: 'Nível 5: Organizando o Caos', subtitle: 'CTEs (WITH) e Subqueries', active: false, completed: false },
-  { id: 15, title: 'Nível 5: Segredos do Spark', subtitle: 'Particionamento e Performance', active: false, completed: false },
+  { id: 14, title: 'Nível 5: Magia de Janela', subtitle: 'Window Functions (ROW_NUMBER, RANK)', active: false, completed: false },
+  { id: 15, title: 'Nível 5: Organizando o Caos', subtitle: 'CTEs (WITH) e Subqueries', active: false, completed: false },
+  { id: 16, title: 'Nível 5: Segredos do Spark', subtitle: 'Particionamento e Performance', active: false, completed: false },
 ];
+
+const getWelcomeMessage = (mentor: MentorType) => {
+  if (mentor === 'naru') {
+    return "Oii Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou o **Naruminho**, seu namorado e monitor oficial. Preparei um currículo gostosinho pra você virar uma Engenheira de Dados top! huahua\n\nSe quiser algo mais... rígido... pode chamar a **Hermione** ali do lado.\n\nVamos começar pelo **Nível 1**, xuxuu. O que você quer fazer?";
+  }
+  return "Olá Isabella. Bem-vinda a **Hogwarts EAD**. 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo rigoroso para você se tornar uma Engenheira de Dados de elite.\n\nVocê também pode escolher o **Naruminho** como seu mentor ali na barra lateral, se preferir menos... disciplina.\n\nComeçamos pelo **Nível 1**. Concentre-se. O que deseja?";
+};
 
 const INITIAL_MESSAGES: Message[] = [
   {
     id: 'welcome',
     role: 'assistant',
-    content: "Olá Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo completo para você se tornar uma Engenheira de Dados de elite!\n\nVocê também pode escolher o **Naruminho** como seu mentor ali na barra lateral.\n\nComeçamos pelo **Nível 1**. O que deseja?",
+    content: getWelcomeMessage('hermione'),
     timestamp: Date.now(),
     suggestedActions: [
       "Começar do zero",
@@ -135,7 +143,7 @@ const INITIAL_MESSAGES: Message[] = [
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules_v1.7',
+  MODULES: 'lellinha_modules_v3.7', // Version bumped to reset curriculum
   PROGRESS: 'lellinha_progress',
   ARCHIVES: 'lellinha_archives',
   MENTOR: 'lellinha_active_mentor'
@@ -166,7 +174,8 @@ const App: React.FC = () => {
     if (loadedMessages) setMessages(JSON.parse(loadedMessages));
     if (loadedModules) {
        const parsed = JSON.parse(loadedModules);
-       if (parsed.length < 10) {
+       // Check if loaded modules match current structure length (basic check)
+       if (parsed.length !== INITIAL_MODULES.length) {
           setModules(INITIAL_MODULES);
        } else {
           setModules(parsed);
@@ -188,6 +197,22 @@ const App: React.FC = () => {
     localStorage.setItem(STORAGE_KEYS.ARCHIVES, JSON.stringify(archives));
     localStorage.setItem(STORAGE_KEYS.MENTOR, activeMentor);
   }, [messages, modules, userProgress, archives, activeMentor]);
+
+  // --- DYNAMIC WELCOME MESSAGE ---
+  useEffect(() => {
+    setMessages(prev => {
+      // Check if the first message is the welcome message
+      if (prev.length > 0 && prev[0].id === 'welcome') {
+        const newContent = getWelcomeMessage(activeMentor);
+        // Only update if content is different to avoid loop
+        if (prev[0].content !== newContent) {
+          const newWelcome = { ...prev[0], content: newContent };
+          return [newWelcome, ...prev.slice(1)];
+        }
+      }
+      return prev;
+    });
+  }, [activeMentor]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -218,7 +243,13 @@ const App: React.FC = () => {
       };
       
       setArchives(prev => [newArchive, ...prev]);
-      setMessages(INITIAL_MESSAGES);
+      // Reset to welcome message with current mentor
+      const resetMessage: Message = {
+        ...INITIAL_MESSAGES[0],
+        content: getWelcomeMessage(activeMentor),
+        timestamp: Date.now()
+      };
+      setMessages([resetMessage]);
     }
   };
 
@@ -323,7 +354,7 @@ const App: React.FC = () => {
         const nextMod = modules.find(m => m.id === userProgress.currentModuleId + 1);
         if (nextMod) {
             setUserProgress(prev => {
-                const newLevel = Math.ceil((prev.currentModuleId + 1) / 3);
+                const newLevel = Math.ceil((prev.currentModuleId + 1) / 3); // Approx formula, logic might vary
                 return { 
                     ...prev, 
                     currentModuleId: prev.currentModuleId + 1,
@@ -376,7 +407,7 @@ const App: React.FC = () => {
         </h4>
         <div className="space-y-2">
           {mods.map(mod => {
-            const cleanTitle = mod.title.split(': ')[1] || mod.title;
+            const cleanTitle = mod.title.split(':')[1] || mod.title;
             return (
               <div key={mod.id} className={`p-3 rounded-lg border transition-all ${
                 mod.active 

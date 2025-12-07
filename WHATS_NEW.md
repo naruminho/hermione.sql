@@ -1,5 +1,12 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v3.7 - Módulo Distinct e Reset
+- **Novo Módulo:** Inclusão do módulo dedicado "O Feitiço da Unicidade (DISTINCT)" no Nível 1.
+- **Storage Reset:** Atualização de chave de persistência para forçar o carregamento da nova grade curricular.
+
+## v3.6 - Boas-Vindas Dinâmicas
+- **Mensagem Adaptativa:** A mensagem inicial de boas-vindas agora muda instantaneamente entre "Olá Isabella" (Hermione) e "Oii Lellinha" (Naruminho) ao alternar o mentor.
+
 ## v3.5 - Refinamento Naruminho
 - **Intimidade:** Naruminho foi instruído a nunca se apresentar formalmente, agindo naturalmente como quem já conhece a Lellinha.
 - **Risadas:** Adicionada a variação "hihihi" além do "huahua" para momentos mais fofos.
