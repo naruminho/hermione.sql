@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit, AlertTriangle } from 'lucide-react';
 
-const APP_VERSION = "v1.3"; // ATUALIZADO PARA v1.3
+const APP_VERSION = "v1.4"; // ATUALIZADO PARA v1.4 COM DUELOS
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -189,10 +189,16 @@ const App: React.FC = () => {
     let displayContent = text;
     let prompt = text;
 
-    // Handle Drill Mode Request (Hidden from UI but sent to AI)
-    if (text === "DRILL_MODE_REQUEST") {
-      displayContent = "🧙‍♀️ Hermione, me mande um exercício prático agora!";
-      prompt = "DRILL_MODE_REQUEST";
+    // Handle Drill Mode Request
+    if (text === "DUEL_MODE_REQUEST") {
+      displayContent = "⚔️ Hermione, quero um DUELO! Mande uma bateria de exercícios!";
+      prompt = "DUEL_MODE_REQUEST";
+    }
+
+    // Handle Time Turner Request
+    if (text === "TIME_TURNER_REQUEST") {
+      displayContent = "⏳ Vira-Tempo: Hermione, revise algo que eu já aprendi.";
+      prompt = "TIME_TURNER_REQUEST";
     }
 
     const userMsg: Message = {
@@ -209,9 +215,13 @@ const App: React.FC = () => {
 
     // Get current module context
     const currentModule = modules.find(m => m.active)?.title || "Módulo Geral";
+    const completedModulesList = modules
+      .filter(m => m.completed)
+      .map(m => m.title)
+      .join(", ");
 
     // Pass FULL HISTORY and CONTEXT to the service
-    const result = await generateContent(prompt, newMessages, currentModule);
+    const result = await generateContent(prompt, newMessages, currentModule, completedModulesList);
 
     // 1. Split Response from Options
     const parts = result.text.split('---OPTIONS---');
@@ -263,6 +273,7 @@ const App: React.FC = () => {
   // Mana bar calculation (just visual max 500 for level 1)
   const maxMana = 500;
   const manaPercentage = Math.min((userProgress.xp / maxMana) * 100, 100);
+  const hasCompletedModules = modules.some(m => m.completed);
 
   return (
     <div className="flex h-screen bg-slate-950 text-slate-200 overflow-hidden font-sans">
@@ -391,7 +402,11 @@ const App: React.FC = () => {
 
         <div className="p-4 md:p-6 bg-slate-950 border-t border-slate-800/50 z-20">
           <div className="max-w-3xl mx-auto">
-            <InputArea onSend={handleSend} appState={appState} />
+            <InputArea 
+              onSend={handleSend} 
+              appState={appState} 
+              hasCompletedModules={hasCompletedModules} 
+            />
           </div>
         </div>
       </main>

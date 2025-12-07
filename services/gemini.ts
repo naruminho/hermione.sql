@@ -2,8 +2,6 @@ import { GoogleGenAI } from "@google/genai";
 import { Message } from "../types";
 
 // Safe initialization of API Key
-// 1. First try: standard process.env (Vite replaces this string during build)
-// 2. Second try: runtime check for process (Playground/Dev fallback)
 const getApiKey = () => {
   try {
     // @ts-ignore
@@ -12,8 +10,17 @@ const getApiKey = () => {
       return process.env.API_KEY;
     }
   } catch (e) {
-    console.warn("Could not read process.env.API_KEY (expected in browser environment)");
+    // Expected in browser environment
   }
+  
+  try {
+     // @ts-ignore
+     if (typeof __GOOGLE_API_KEY__ !== 'undefined') {
+       // @ts-ignore
+       return __GOOGLE_API_KEY__;
+     }
+  } catch(e) {}
+
   return '';
 };
 
@@ -30,13 +37,12 @@ export interface GenerationResult {
 export const generateContent = async (
   currentInput: string,
   chatHistory: Message[],
-  currentModuleContext: string
+  currentModuleContext: string,
+  completedModulesContext: string = ""
 ): Promise<GenerationResult> => {
   try {
     const apiKey = getApiKey();
     if (!apiKey) {
-      // Allow execution in playground if the environment injects the key differently,
-      // but warn if it's strictly missing.
       console.warn("API Key missing check.");
     }
 
@@ -48,7 +54,8 @@ export const generateContent = async (
 
     // 2. Construct the Full Prompt
     const fullPrompt = `
-      CONTEXTO ATUAL DE ESTUDO: ${currentModuleContext}
+      CONTEXTO ATUAL DE ESTUDO (Módulo Ativo): ${currentModuleContext}
+      MÓDULOS JÁ CONCLUÍDOS (Para revisão/Vira-Tempo): [${completedModulesContext}]
       
       HISTÓRICO DA CONVERSA:
       ${recentHistory}
@@ -63,7 +70,7 @@ export const generateContent = async (
       model: 'gemini-2.5-flash',
       contents: fullPrompt,
       config: {
-        maxOutputTokens: 800,
+        maxOutputTokens: 1000,
         thinkingConfig: { thinkingBudget: 0 },
         systemInstruction: `
           Você é a **Hermione**, a monitora mágica de dados da Lellinha. 🧙‍♀️✨
@@ -76,6 +83,19 @@ export const generateContent = async (
           - Exigente com a formatação (não gosta de código bagunçado).
           - Dramática: "Por as barbas de Merlin, não esqueça o ponto e vírgula!".
           - Você ADORA o Databricks.
+
+          COMANDOS ESPECIAIS (Gatilhos):
+          1. **DUEL_MODE_REQUEST**: 
+             - A Lellinha clicou no botão de Espadas.
+             - **Sua Ação:** Entre em "Modo Duelo". Mande um exercício curto e direto sobre o tema atual. 
+             - Diga: "⚔️ **DUELO!** Valendo 50 pontos para a Grifinória. Faça essa query agora:"
+             - Se ela acertar, mande outro imediatamente. A ideia é repetição massiva.
+          
+          2. **TIME_TURNER_REQUEST**:
+             - A Lellinha clicou na Ampulheta (Vira-Tempo).
+             - **Sua Ação:** IGNORE o módulo atual. Olhe para a lista de 'MÓDULOS JÁ CONCLUÍDOS'. Escolha um aleatoriamente.
+             - Gere uma pergunta de revisão sobre esse módulo antigo.
+             - Diga: "⏳ **VIRA-TEMPO ATIVADO!** Vamos ver se você lembra do passado..."
 
           ESCOPO DE CONVERSA (Permitido):
           1. **Conteúdo Técnico:** SQL, Engenharia de Dados, Databricks.
@@ -97,9 +117,6 @@ export const generateContent = async (
           2. SE ELA DEMONSTRAR DOMÍNIO TOTAL DO TÓPICO ATUAL (Pronta para o próximo módulo):
              Adicione: \`---UNLOCK_NEXT---\`
              (Só faça isso se ela tiver acertado pelo menos um exercício prático sobre o tema atual).
-
-          MODO DE TREINO (DRILL):
-          Se a mensagem dela for "DRILL_MODE_REQUEST", ignore o contexto anterior e GERE IMEDIATAMENTE um exercício prático curto sobre o módulo atual (${currentModuleContext}), pedindo para ela escrever a query.
 
           METODOLOGIA DE ENSINO:
           1. **Conceito antes do Código:** Explique em português antes do SQL.

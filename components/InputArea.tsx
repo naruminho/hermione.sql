@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Sparkles, Loader2, Dumbbell } from 'lucide-react';
+import { Send, Sparkles, Loader2, Swords, Hourglass } from 'lucide-react';
 import { AppState } from '../types';
 
 interface InputAreaProps {
   onSend: (text: string) => void;
   appState: AppState;
+  hasCompletedModules: boolean;
 }
 
-export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState }) => {
+export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompletedModules }) => {
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -22,9 +23,15 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState }) => {
     }
   };
 
-  const handleDrillRequest = () => {
+  const handleDuelRequest = () => {
     if (appState !== AppState.GENERATING) {
-      onSend("DRILL_MODE_REQUEST");
+      onSend("DUEL_MODE_REQUEST");
+    }
+  };
+
+  const handleTimeTurnerRequest = () => {
+    if (appState !== AppState.GENERATING && hasCompletedModules) {
+      onSend("TIME_TURNER_REQUEST");
     }
   };
 
@@ -62,20 +69,37 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState }) => {
           />
 
           <div className="flex items-center gap-1 pb-[1px] pr-[1px]">
-             {/* Drill Button */}
+             
+            {/* Time Turner Button (Review) */}
             <button
               type="button"
-              onClick={handleDrillRequest}
-              disabled={appState === AppState.GENERATING}
-              title="Gerar Exercício Prático"
+              onClick={handleTimeTurnerRequest}
+              disabled={appState === AppState.GENERATING || !hasCompletedModules}
+              title={hasCompletedModules ? "Vira-Tempo: Revisar matéria passada" : "Conclua um módulo para desbloquear o Vira-Tempo"}
               className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center border border-transparent
-                ${appState === AppState.GENERATING 
-                  ? 'text-slate-600 cursor-not-allowed' 
-                  : 'bg-slate-800 text-purple-400 hover:bg-slate-700 hover:text-purple-300 hover:border-purple-500/30'
+                ${appState === AppState.GENERATING || !hasCompletedModules
+                  ? 'text-slate-700 cursor-not-allowed opacity-50' 
+                  : 'bg-slate-800 text-amber-400 hover:bg-slate-700 hover:text-amber-300 hover:border-amber-500/30 shadow-[0_0_10px_rgba(251,191,36,0.1)]'
                 }
               `}
             >
-              <Dumbbell size={18} />
+              <Hourglass size={18} />
+            </button>
+
+             {/* Duel Button (Drill) */}
+            <button
+              type="button"
+              onClick={handleDuelRequest}
+              disabled={appState === AppState.GENERATING}
+              title="Modo Duelo: Bateria de Exercícios"
+              className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center border border-transparent
+                ${appState === AppState.GENERATING 
+                  ? 'text-slate-600 cursor-not-allowed' 
+                  : 'bg-slate-800 text-red-400 hover:bg-slate-700 hover:text-red-300 hover:border-red-500/30 shadow-[0_0_10px_rgba(248,113,113,0.1)]'
+                }
+              `}
+            >
+              <Swords size={18} />
             </button>
 
             {/* Send Button */}
