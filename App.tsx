@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart } from 'lucide-react';
 
-const APP_VERSION = "v3.0";
+const APP_VERSION = "v3.2";
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -123,7 +123,7 @@ const INITIAL_MESSAGES: Message[] = [
   {
     id: 'welcome',
     role: 'assistant',
-    content: "Olá Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo completo para você se tornar uma Engenheira de Dados de elite!\n\nVocê também pode escolher o **Naru** como seu monitor ali na barra lateral, se preferir alguém mais... \"xuxuu\". huahua\n\nComeçamos pelo **Nível 1**. O que deseja?",
+    content: "Olá Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo completo para você se tornar uma Engenheira de Dados de elite!\n\nVocê também pode escolher o **Naruminho** como seu monitor ali na barra lateral, se preferir uma abordagem... diferente. \n\nComeçamos pelo **Nível 1**. O que deseja?",
     timestamp: Date.now(),
     suggestedActions: [
       "Começar do zero",
@@ -479,7 +479,7 @@ const App: React.FC = () => {
                onClick={() => setActiveMentor('naru')}
                className={`text-xs py-2 rounded-md flex items-center justify-center gap-1 transition-all ${activeMentor === 'naru' ? 'bg-pink-600 text-white shadow-lg' : 'text-slate-500 hover:text-slate-300'}`}
              >
-               <Heart size={12} /> Naru
+               <Heart size={12} /> Naruminho
              </button>
           </div>
         </div>
@@ -576,7 +576,7 @@ const App: React.FC = () => {
             {appState === AppState.GENERATING && (
               <div className="flex items-center gap-2 text-slate-500 text-sm ml-2 animate-pulse">
                 <Sparkles size={16} className="text-purple-500 animate-spin" />
-                <span>{activeMentor === 'hermione' ? 'Hermione consultando livros...' : 'Naru pensando com carinho...'}</span>
+                <span>{activeMentor === 'hermione' ? 'Hermione consultando livros...' : 'Naruminho pensando com carinho...'}</span>
               </div>
             )}
             <div ref={messagesEndRef} />
