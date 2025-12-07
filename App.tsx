@@ -8,7 +8,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
 
-const APP_VERSION = "v4.2";
+const APP_VERSION = "v4.4";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
@@ -44,7 +44,7 @@ const INITIAL_MESSAGES: Message[] = [
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules_v4.0', // Updated to force reload of modules
+  MODULES: 'lellinha_modules_v4.4', // Updated to force reload of modules
   DROPS: 'lellinha_drops_v4.0',
   PROGRESS: 'lellinha_progress',
   ARCHIVES: 'lellinha_archives',

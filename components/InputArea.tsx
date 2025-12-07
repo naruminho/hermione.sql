@@ -117,7 +117,7 @@ export const InputArea: React.FC<InputAreaProps> = ({ onSend, appState, hasCompl
               className={`p-3 rounded-xl transition-all duration-200 flex items-center justify-center border border-transparent
                 ${appState === AppState.GENERATING 
                   ? 'text-slate-600 cursor-not-allowed' 
-                  : 'bg-slate-800 text-cyan-400 hover:bg-slate-700 hover:text-cyan-300 hover:border-cyan-500/30 shadow-[0_0_10px_rgba(34,211,238,0.1)]'
+                  : 'bg-slate-800 text-purple-400 hover:bg-slate-700 hover:text-purple-300 hover:border-purple-500/30 shadow-[0_0_10px_rgba(168,85,247,0.1)]'
                 }
               `}
             >

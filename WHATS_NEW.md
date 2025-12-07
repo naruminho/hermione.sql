@@ -1,16 +1,16 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v4.4 - N.O.M.s e Currículo Refinado
+- **N.O.M.s (Provas):** Adicionado botão de "Pergaminho" para prestar exames ao final de cada módulo. A IA gera 3 perguntas e só desbloqueia o próximo módulo se a aluna acertar.
+- **Módulo DISTINCT:** Adicionado módulo exclusivo para remover duplicatas no Nível 1.
+- **Sugestões Inteligentes:** Naruminho agora sugere ações de estudo ("Bora estudar") e não de paquera.
+- **Currículo Resetado:** Storage atualizado para v4.4 para garantir que todos recebam a nova grade.
+
 ## v4.2 - Correção Anti-Spoiler
 - **Sugestões Inteligentes:** A IA agora é estritamente proibida de incluir a resposta do exercício ou códigos SQL nos botões de sugestão. Ela deve focar em meta-ações ("Dica", "Ajuda").
 
 ## v4.1 - Correção de Escopo da IA
 - **Calibragem da Hermione:** Ajuste na regra de escopo para permitir perguntas sobre o universo de Hogwarts (contexto de domínio) sem classificar como "fofoca", desde que relacionadas ao entendimento do banco de dados.
-
-## v4.0 - N.O.M.s e Currículo Refinado
-- **N.O.M.s (Provas):** Adicionado botão de "Pergaminho" para prestar exames ao final de cada módulo. A IA gera 3 perguntas e só desbloqueia o próximo módulo se a aluna acertar.
-- **Módulo DISTINCT:** Adicionado módulo exclusivo para remover duplicatas no Nível 1.
-- **Sugestões Inteligentes:** Naruminho agora sugere ações de estudo ("Bora estudar") e não de paquera.
-- **Currículo Resetado:** Storage atualizado para v4.0 para garantir que todos recebam a nova grade.
 
 ## v3.9 - Sugestões de Ação por Mentor
 - **Ações Personalizadas:** As sugestões de resposta rápida agora mudam conforme o mentor (Hermione formal vs Naruminho coloquial/educacional).

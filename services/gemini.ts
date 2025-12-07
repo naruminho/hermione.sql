@@ -39,6 +39,7 @@ const BASE_INSTRUCTIONS = `
 CRITÉRIO DE APROVAÇÃO (COMO PASSAR DE NÍVEL):
 1. Só envie a tag \`---UNLOCK_NEXT---\` se a aluna **ACERTAR UM EXERCÍCIO DE CÓDIGO** ou **PASSAR NO N.O.M. (PROVA)**.
 2. Papo furado ou perguntas teóricas NÃO desbloqueiam módulo. Ela tem que escrever SQL.
+3. Se ela demonstrar domínio, sugira: "Você parece pronta para os N.O.M.s! Clique no pergaminho ou peça a prova."
 
 COMANDOS ESPECIAIS (Gatilhos):
 1. **DUEL_MODE_REQUEST**: Entre em modo Bateria de Exercícios rápidos sobre o tema atual.
