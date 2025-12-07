@@ -8,11 +8,11 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap } from 'lucide-react';
 
-const APP_VERSION = "v5.1";
+const APP_VERSION = "v5.2";
 
 const getWelcomeMessage = (mentor: MentorType) => {
   if (mentor === 'naru') {
-    return "Oii Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou o **Naruminho**, seu namorado e monitor oficial. Preparei um currículo gostosinho pra você virar uma Engenheira de Dados top! huahua\n\nSe quiser algo mais... rígido... pode chamar a **Hermione** ali do lado.\n\nVamos começar pelo **Nível 1**, xuxuu. O que você quer fazer?";
+    return "Oii Lellinha! Bem-vinda a **Hogwarts EAD**! 🏰🎓\n\nEu sou o **Naruminho**, seu monitor oficial. Preparei um currículo gostosinho pra você virar uma Engenheira de Dados top! huahua\n\nSe quiser algo mais... rígido... pode chamar a **Hermione** ali do lado.\n\nVamos começar pelo **Nível 1**, xuxuu. O que você quer fazer?";
   }
   return "Olá Isabella. Bem-vinda a **Hogwarts EAD**. 🏰🎓\n\nEu sou a **Hermione**, sua monitora oficial. Preparei um currículo rigoroso para você se tornar uma Engenheira de Dados de elite.\n\nVocê também pode escolher o **Naruminho** como seu mentor ali na barra lateral.\n\nComeçamos pelo **Nível 1**. Concentre-se. O que deseja?";
 };

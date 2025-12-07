@@ -1,5 +1,8 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v5.2 - Ajuste de Texto do Mentor
+- **Naruminho:** Removida a referência explícita a "seu namorado" na mensagem de boas-vindas do Naruminho, mantendo o tom carinhoso sem rótulos.
+
 ## v5.1 - Refinamento da Persona Hermione
 - **"É Levi-ô-sa" Contextual:** A IA agora usa frases de efeito da Hermione de forma contextual, adaptando as correções à sintaxe SQL (ex: "É SÉ-LECT, não Se-le-ct") em vez de repetir frases de Harry Potter aleatoriamente.
 
