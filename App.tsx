@@ -5,7 +5,7 @@ import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2 } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap } from 'lucide-react';
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -155,7 +155,7 @@ const App: React.FC = () => {
       {/* Left Sidebar - Navigation / Modules */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-2 rounded-lg">
+          <div className="bg-gradient-to-br from-purple-500 to-indigo-600 p-2 rounded-lg shadow-lg shadow-purple-900/20">
             <Wand2 className="text-white" size={24} />
           </div>
           <div>
@@ -186,12 +186,26 @@ const App: React.FC = () => {
           </div>
         </div>
 
+        {/* User Profile / Mana Bar */}
         <div className="p-4 border-t border-slate-800">
-           <div className="bg-slate-800/50 rounded-lg p-3 flex items-center gap-3">
-             <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center text-xs font-bold">L</div>
-             <div className="flex-1 min-w-0">
-               <p className="text-sm font-medium truncate">Lellinha</p>
-               <p className="text-xs text-slate-500">Nível 1: Trouxa em SQL</p>
+           <div className="bg-slate-800/50 rounded-xl p-3">
+             <div className="flex items-center gap-3 mb-3">
+               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-sm font-bold shadow-md">L</div>
+               <div className="flex-1 min-w-0">
+                 <p className="text-sm font-bold text-white truncate">Lellinha</p>
+                 <p className="text-[10px] text-slate-400">Aprendiz de Feiticeira</p>
+               </div>
+             </div>
+             
+             {/* Mana Bar */}
+             <div className="space-y-1">
+                <div className="flex justify-between text-[10px] font-medium">
+                  <span className="text-blue-300 flex items-center gap-1"><Zap size={10}/> Mana (Tokens)</span>
+                  <span className="text-blue-300">80%</span>
+                </div>
+                <div className="h-1.5 w-full bg-slate-700 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-500 w-[80%] rounded-full shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                </div>
              </div>
            </div>
         </div>
@@ -227,7 +241,7 @@ const App: React.FC = () => {
             ))}
             
             {appState === AppState.GENERATING && (
-              <div className="flex items-center gap-2 text-slate-500 text-sm ml-2">
+              <div className="flex items-center gap-2 text-slate-500 text-sm ml-2 animate-pulse">
                 <Sparkles size={16} className="text-purple-500 animate-spin" />
                 <span>Hermione está consultando os livros...</span>
               </div>
