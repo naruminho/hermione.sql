@@ -1,5 +1,8 @@
 # Changelog - Jornada da Lellinha 🚀
 
+## v4.9 - Refinamento de Texto
+- **Hermione:** Correção no texto de boas-vindas para remover spoilers sobre a personalidade do Naruminho.
+
 ## v4.8 - N.O.M.s Cumulativos (Boss Fight)
 - **Prova Inteligente:** Diferenciação entre Prova Comum (Módulo) e Exame Final de Nível.
 - **Boss Fight:** Nos últimos módulos de cada nível, a prova cobre todo o conteúdo do nível cumulativamente.
