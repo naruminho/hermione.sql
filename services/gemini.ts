@@ -24,8 +24,6 @@ const getApiKey = () => {
   return '';
 };
 
-const ai = new GoogleGenAI({ apiKey: getApiKey() });
-
 export interface GenerationResult {
   text: string;
   error?: string;
@@ -42,9 +40,19 @@ export const generateContent = async (
 ): Promise<GenerationResult> => {
   try {
     const apiKey = getApiKey();
+    
+    // CRITICAL FIX: Check API Key BEFORE initializing the client
     if (!apiKey) {
-      console.warn("API Key missing check.");
+      console.error("API Key is missing.");
+      return { 
+        text: "", 
+        error: "ERRO DE CONFIGURAÇÃO: A API Key do Google não foi encontrada. Verifique as configurações do Vercel (Environment Variables) ou o arquivo .env." 
+      };
     }
+
+    // CRITICAL FIX: Initialize client INSIDE the function (Lazy Loading)
+    // This prevents the app from crashing on startup if the key is invalid
+    const ai = new GoogleGenAI({ apiKey });
 
     // 1. Format History for the AI
     // We limit to the last 10 messages to save tokens but keep recent context

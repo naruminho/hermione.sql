@@ -7,7 +7,7 @@ import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
 import { Database, Lightbulb, Sparkles, Menu, Wand2, Zap, Trash2, GitCommit, AlertTriangle } from 'lucide-react';
 
-const APP_VERSION = "v1.5"; // CURRICULO COMPLETO + DROPS
+const APP_VERSION = "v1.6"; // INITIALIZATION FIX
 
 const ALL_TABLES: TableSchema[] = [
   {
@@ -134,7 +134,7 @@ const INITIAL_MESSAGES: Message[] = [
 
 const STORAGE_KEYS = {
   MESSAGES: 'lellinha_messages',
-  MODULES: 'lellinha_modules_v1.5', // Updated key to force refresh of modules structure
+  MODULES: 'lellinha_modules_v1.6', // Force refresh to new curriculum
   PROGRESS: 'lellinha_progress'
 };
 
@@ -254,54 +254,78 @@ const App: React.FC = () => {
       .map(m => m.title)
       .join(", ");
 
-    // Pass FULL HISTORY and CONTEXT to the service
-    const result = await generateContent(prompt, newMessages, currentModule, completedModulesList);
+    try {
+      // Pass FULL HISTORY and CONTEXT to the service
+      const result = await generateContent(prompt, newMessages, currentModule, completedModulesList);
 
-    // 1. Split Response from Options
-    const parts = result.text.split('---OPTIONS---');
-    let rawContent = parts[0].trim();
-    const rawOptions = parts[1] ? parts[1].trim().split('\n').filter(s => s.trim().length > 0) : [];
-
-    // 2. Parse Hidden Gamification Tags
-    const { cleanText, xpGained, unlockNext } = parseHiddenTags(rawContent);
-
-    // 3. Update Progress if needed
-    if (xpGained > 0) {
-      setUserProgress(prev => ({ ...prev, xp: prev.xp + xpGained }));
-    }
-
-    if (unlockNext) {
-      setModules(prev => {
-        const nextId = userProgress.currentModuleId + 1;
-        // Check if next module exists and is not active
-        const nextModuleExists = prev.find(m => m.id === nextId && !m.active);
-        
-        if (nextModuleExists) {
-          return prev.map(m => {
-             if (m.id === userProgress.currentModuleId) return { ...m, completed: true };
-             if (m.id === nextId) return { ...m, active: true };
-             return m;
-          });
-        }
-        return prev;
-      });
-      
-      if (modules.find(m => m.id === userProgress.currentModuleId + 1)) {
-          setUserProgress(prev => ({ ...prev, currentModuleId: prev.currentModuleId + 1 }));
+      if (result.error) {
+        const errorMsg: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: result.error,
+          timestamp: Date.now(),
+          isError: true,
+        };
+        setMessages(prev => [...prev, errorMsg]);
+        return;
       }
+
+      // 1. Split Response from Options
+      const parts = result.text.split('---OPTIONS---');
+      let rawContent = parts[0].trim();
+      const rawOptions = parts[1] ? parts[1].trim().split('\n').filter(s => s.trim().length > 0) : [];
+
+      // 2. Parse Hidden Gamification Tags
+      const { cleanText, xpGained, unlockNext } = parseHiddenTags(rawContent);
+
+      // 3. Update Progress if needed
+      if (xpGained > 0) {
+        setUserProgress(prev => ({ ...prev, xp: prev.xp + xpGained }));
+      }
+
+      if (unlockNext) {
+        setModules(prev => {
+          const nextId = userProgress.currentModuleId + 1;
+          // Check if next module exists and is not active
+          const nextModuleExists = prev.find(m => m.id === nextId && !m.active);
+          
+          if (nextModuleExists) {
+            return prev.map(m => {
+              if (m.id === userProgress.currentModuleId) return { ...m, completed: true };
+              if (m.id === nextId) return { ...m, active: true };
+              return m;
+            });
+          }
+          return prev;
+        });
+        
+        if (modules.find(m => m.id === userProgress.currentModuleId + 1)) {
+            setUserProgress(prev => ({ ...prev, currentModuleId: prev.currentModuleId + 1 }));
+        }
+      }
+
+      const botMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: cleanText,
+        timestamp: Date.now(),
+        isError: false,
+        suggestedActions: rawOptions
+      };
+
+      setMessages(prev => [...prev, botMsg]);
+    } catch (e) {
+      const errorMsg: Message = {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: "Ocorreu um erro crítico de comunicação. Verifique a API Key.",
+        timestamp: Date.now(),
+        isError: true,
+      };
+      setMessages(prev => [...prev, errorMsg]);
+    } finally {
+      setAppState(AppState.IDLE);
     }
-
-    const botMsg: Message = {
-      id: (Date.now() + 1).toString(),
-      role: 'assistant',
-      content: cleanText,
-      timestamp: Date.now(),
-      isError: !!result.error,
-      suggestedActions: rawOptions
-    };
-
-    setMessages(prev => [...prev, botMsg]);
-    setAppState(AppState.IDLE);
   };
 
   // Mana bar calculation (just visual max 500 for level 1)
@@ -315,13 +339,13 @@ const App: React.FC = () => {
       {/* Left Sidebar - Navigation / Modules */}
       <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-slate-900 border-r border-slate-800 flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
         <div className="p-6 border-b border-slate-800 flex items-center gap-3">
-          {/* MUDANÇA VISUAL: CABEÇALHO ROSA PARA CONFIRMAÇÃO DE DEPLOY */}
-          <div className="bg-gradient-to-br from-pink-600 to-rose-600 p-2 rounded-lg shadow-lg shadow-rose-900/20">
+          {/* MUDANÇA VISUAL: CABEÇALHO VERMELHO PARA CONFIRMAÇÃO DE DEPLOY */}
+          <div className="bg-gradient-to-br from-red-600 to-orange-600 p-2 rounded-lg shadow-lg shadow-red-900/20">
             <Wand2 className="text-white" size={24} />
           </div>
           <div>
             <h1 className="font-bold text-slate-100 leading-tight">Hermione</h1>
-            <span className="text-[10px] text-pink-400 font-medium uppercase tracking-wider">Monitora de Dados</span>
+            <span className="text-[10px] text-red-400 font-medium uppercase tracking-wider">Monitora de Dados</span>
           </div>
         </div>
 
@@ -355,7 +379,7 @@ const App: React.FC = () => {
         <div className="p-4 border-t border-slate-800 space-y-3 bg-slate-900">
            <div className="bg-slate-800/50 rounded-xl p-3 border border-slate-800">
              <div className="flex items-center gap-3 mb-3">
-               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-pink-500 to-rose-500 flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-slate-900">L</div>
+               <div className="w-9 h-9 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-slate-900">L</div>
                <div className="flex-1 min-w-0">
                  <p className="text-sm font-bold text-white truncate">Lellinha</p>
                  <p className="text-[10px] text-slate-400">Nível {userProgress.level} • {userProgress.xp} XP</p>
