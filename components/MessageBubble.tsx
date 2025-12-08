@@ -18,7 +18,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, activeMen
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const assistantAvatar = activeMentor === 'hermione' ? '/hermione.jpg' : '/naruminho.jpg';
+  const assistantAvatar = activeMentor === 'hermione' ? '/hermione.jpg' : '/narumi.jpg';
+  const userAvatar = '/lellinha.png';
 
   // Simple Markdown Parser
   const renderContent = (content: string) => {
@@ -93,7 +94,12 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, activeMen
               : 'bg-gradient-to-br from-purple-600 to-indigo-600 overflow-hidden'
         }`}>
           {isUser ? (
-            <User size={16} className="text-white" />
+            <img 
+              src={userAvatar}
+              alt="Lellinha"
+              className="w-full h-full object-cover rounded-full"
+              loading="lazy"
+            />
           ) : message.isError ? (
             <AlertCircle size={16} className="text-white" />
           ) : (
