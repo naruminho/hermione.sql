@@ -6,7 +6,7 @@ import { MessageBubble } from './components/MessageBubble';
 import { InputArea } from './components/InputArea';
 import { SchemaViewer } from './components/SchemaViewer';
 import { QuickActions } from './components/QuickActions';
-import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap, ArrowLeft } from 'lucide-react';
+import { Database, Lightbulb, Sparkles, Menu, Wand2, BookOpen, GitCommit, Save, X, History, Lock, GraduationCap, Heart, Zap, ArrowLeft, Trash2 } from 'lucide-react';
 
 const APP_VERSION = "v5.3";
 
@@ -183,6 +183,14 @@ const App: React.FC = () => {
       };
       setMessages([resetMessage]);
       setIsExamActive(false); // Reset exam state on archive
+    }
+  };
+
+  const handleClearArchives = () => {
+    if (archives.length === 0) return;
+    if (confirm('Tem certeza que deseja apagar toda a Penseira? Isso não poderá ser desfeito.')) {
+      setArchives([]);
+      setSelectedArchive(null);
     }
   };
 
@@ -430,9 +438,20 @@ const App: React.FC = () => {
                   A Penseira (Memórias)
                 </h2>
               </div>
-              <button onClick={() => { setShowArchives(false); setSelectedArchive(null); }} className="p-2 hover:bg-red-900/70 rounded-lg text-amber-200">
-                <X size={20} />
-              </button>
+              <div className="flex items-center gap-2">
+                {archives.length > 0 && (
+                  <button
+                    onClick={handleClearArchives}
+                    className="p-2 hover:bg-red-900/70 rounded-lg text-amber-200 border border-red-900/60 bg-red-950/50"
+                    title="Apagar toda a Penseira"
+                  >
+                    <Trash2 size={18} />
+                  </button>
+                )}
+                <button onClick={() => { setShowArchives(false); setSelectedArchive(null); }} className="p-2 hover:bg-red-900/70 rounded-lg text-amber-200">
+                  <X size={20} />
+                </button>
+              </div>
             </div>
 
             {!selectedArchive ? (
