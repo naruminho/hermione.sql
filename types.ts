@@ -3,6 +3,7 @@ export interface Message {
   role: 'user' | 'assistant';
   content: string;
   timestamp: number;
+  mentor?: MentorType; // Used to keep avatar consistent with who answered
   isError?: boolean;
   suggestedActions?: string[];
 }

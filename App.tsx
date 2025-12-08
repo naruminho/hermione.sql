@@ -49,6 +49,7 @@ const INITIAL_MESSAGES: Message[] = [
     role: 'assistant',
     content: getWelcomeMessage('hermione'),
     timestamp: Date.now(),
+    mentor: 'hermione',
     suggestedActions: getWelcomeActions('hermione', 1)
   }
 ];
@@ -131,6 +132,7 @@ const App: React.FC = () => {
           const newWelcome = { 
             ...prev[0], 
             content: newContent,
+            mentor: activeMentor,
             suggestedActions: newActions
           };
           return [newWelcome, ...prev.slice(1)];
@@ -176,6 +178,7 @@ const App: React.FC = () => {
         ...INITIAL_MESSAGES[0],
         content: getWelcomeMessage(activeMentor),
         timestamp: Date.now(),
+        mentor: activeMentor,
         suggestedActions: getWelcomeActions(activeMentor, currentModuleId)
       };
       setMessages([resetMessage]);
@@ -257,6 +260,7 @@ const App: React.FC = () => {
           role: 'assistant',
           content: result.error,
           timestamp: Date.now(),
+          mentor: activeMentor,
           isError: true,
         };
         setMessages(prev => [...prev, errorMsg]);
@@ -327,6 +331,7 @@ const App: React.FC = () => {
         role: 'assistant',
         content: cleanText,
         timestamp: Date.now(),
+        mentor: activeMentor,
         isError: false,
         suggestedActions: rawOptions
       };
@@ -394,6 +399,15 @@ const App: React.FC = () => {
 
   return (
     <div className="flex h-screen bg-[#120a0e] text-[#e6d8b0] overflow-hidden font-sans">
+
+      {/* Mobile Sidebar Overlay */}
+      {showMobileSidebar && (
+        <div 
+          className="fixed inset-0 bg-black/60 z-20 md:hidden" 
+          onClick={() => setShowMobileSidebar(false)}
+          aria-hidden="true"
+        />
+      )}
       
       {/* PENSEIRA MODAL */}
       {showArchives && (
@@ -458,28 +472,45 @@ const App: React.FC = () => {
                   <p className="text-xs text-amber-200/70">Registrada em {new Date(selectedArchive.date).toLocaleString()}</p>
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide bg-gradient-to-b from-red-950/50 via-slate-950/60 to-amber-950/40">
-                  {selectedArchive.messages.map(msg => (
-                    <div
-                      key={msg.id}
-                      className={`max-w-4xl ${msg.role === 'user' ? 'ml-auto' : ''}`}
-                    >
-                      <div className={`p-4 rounded-2xl border shadow-md ${
-                        msg.role === 'user'
-                          ? 'bg-amber-900/30 border-amber-700/50 text-amber-50'
-                          : msg.isError
-                            ? 'bg-red-950/50 border-red-700/50 text-red-100'
-                            : 'bg-red-900/40 border-amber-800/50 text-amber-100'
-                      }`}>
-                        <div className="text-[11px] font-semibold uppercase tracking-wide opacity-70 mb-2">
-                          {msg.role === 'user' ? 'Lellinha' : 'Monitor'}
-                        </div>
-                        <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
-                        <div className="text-[10px] opacity-50 mt-2">
-                          {new Date(msg.timestamp).toLocaleString()}
+                  {selectedArchive.messages.map(msg => {
+                    const mentorAvatar = (msg.mentor || 'hermione') === 'hermione' ? '/hermione.jpg' : '/narumi.jpg';
+                    const isUserMsg = msg.role === 'user';
+                    const avatarSrc = isUserMsg ? '/lellinha.png' : mentorAvatar;
+                    const avatarAlt = isUserMsg ? 'Lellinha' : (msg.mentor || 'hermione') === 'hermione' ? 'Hermione' : 'Naruminho';
+
+                    return (
+                      <div
+                        key={msg.id}
+                        className={`max-w-4xl flex ${isUserMsg ? 'ml-auto justify-end' : 'justify-start'}`}
+                      >
+                        <div className={`flex items-start gap-3 ${isUserMsg ? 'flex-row-reverse text-right' : ''}`}>
+                          <div className="w-9 h-9 rounded-full overflow-hidden shadow-md border border-[#3a1c23] bg-[#2a171d]">
+                            <img
+                              src={avatarSrc}
+                              alt={avatarAlt}
+                              className="w-full h-full object-cover"
+                              loading="lazy"
+                            />
+                          </div>
+                          <div className={`p-4 rounded-2xl border shadow-md ${
+                            isUserMsg
+                              ? 'bg-amber-900/30 border-amber-700/50 text-amber-50'
+                              : msg.isError
+                                ? 'bg-red-950/50 border-red-700/50 text-red-100'
+                                : 'bg-red-900/40 border-amber-800/50 text-amber-100'
+                          }`}>
+                            <div className="text-[11px] font-semibold uppercase tracking-wide opacity-70 mb-2">
+                              {isUserMsg ? 'Lellinha' : 'Monitor'}
+                            </div>
+                            <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
+                            <div className="text-[10px] opacity-50 mt-2">
+                              {new Date(msg.timestamp).toLocaleString()}
+                            </div>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -488,7 +519,14 @@ const App: React.FC = () => {
       )}
 
       {/* Left Sidebar */}
-      <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-[#1c0f16] border-r border-[#3a1c23] flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`fixed md:static inset-y-0 left-0 z-30 w-72 bg-[#1c0f16] border-r border-[#3a1c23] flex flex-col transform transition-transform duration-300 md:transform-none ${showMobileSidebar ? 'translate-x-0' : '-translate-x-full'} relative`}>
+        <button 
+          onClick={() => setShowMobileSidebar(false)}
+          className="md:hidden absolute top-3 right-3 p-2 rounded-lg text-[#f1e7c8] hover:bg-[#2a171d] border border-[#3a1c23] shadow-lg"
+          aria-label="Fechar menu"
+        >
+          <X size={18} />
+        </button>
         <div className="p-6 border-b border-[#3a1c23] flex items-center gap-3 bg-[#241019]">
           <div className="bg-[#2a121c] p-2 rounded-lg shadow-lg border border-[#4a1f29]">
             <GraduationCap className="text-white" size={24} />

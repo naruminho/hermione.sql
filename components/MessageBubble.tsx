@@ -18,7 +18,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, activeMen
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const assistantAvatar = activeMentor === 'hermione' ? '/hermione.jpg' : '/narumi.jpg';
+  const mentorForMessage = message.mentor || activeMentor;
+  const assistantAvatar = mentorForMessage === 'hermione' ? '/hermione.jpg' : '/narumi.jpg';
   const userAvatar = '/lellinha.png';
 
   // Simple Markdown Parser
@@ -105,7 +106,7 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, activeMen
           ) : (
             <img 
               src={assistantAvatar} 
-              alt={activeMentor === 'hermione' ? 'Hermione' : 'Naruminho'} 
+              alt={mentorForMessage === 'hermione' ? 'Hermione' : 'Naruminho'} 
               className="w-full h-full object-cover"
               loading="lazy"
             />
