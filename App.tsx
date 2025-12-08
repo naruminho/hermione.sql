@@ -208,6 +208,7 @@ const App: React.FC = () => {
   };
 
   const handleSend = async (text: string) => {
+    const mentorAtSend = activeMentor;
     let displayContent = text;
     let prompt = text;
 
@@ -260,7 +261,7 @@ const App: React.FC = () => {
           role: 'assistant',
           content: result.error,
           timestamp: Date.now(),
-          mentor: activeMentor,
+          mentor: mentorAtSend,
           isError: true,
         };
         setMessages(prev => [...prev, errorMsg]);
@@ -331,7 +332,7 @@ const App: React.FC = () => {
         role: 'assistant',
         content: cleanText,
         timestamp: Date.now(),
-        mentor: activeMentor,
+        mentor: mentorAtSend,
         isError: false,
         suggestedActions: rawOptions
       };
