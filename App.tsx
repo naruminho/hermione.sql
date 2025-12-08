@@ -594,7 +594,7 @@ const App: React.FC = () => {
           <div className="max-w-3xl mx-auto space-y-6 pb-4">
             {messages.map(msg => (
               <div key={msg.id}>
-                <MessageBubble message={msg} />
+                <MessageBubble message={msg} activeMentor={activeMentor} />
                 {msg.role === 'assistant' && msg.suggestedActions && (
                   <div className="flex justify-start ml-11 md:ml-12 -mt-4 mb-8">
                      <QuickActions 

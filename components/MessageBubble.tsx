@@ -1,13 +1,14 @@
 import React from 'react';
-import { Message } from '../types';
-import { Bot, User, AlertCircle, Copy, Check } from 'lucide-react';
+import { Message, MentorType } from '../types';
+import { User, AlertCircle, Copy, Check } from 'lucide-react';
 import { useState } from 'react';
 
 interface MessageBubbleProps {
   message: Message;
+  activeMentor: MentorType;
 }
 
-export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
+export const MessageBubble: React.FC<MessageBubbleProps> = ({ message, activeMentor }) => {
   const isUser = message.role === 'user';
   const [copied, setCopied] = useState(false);
 
@@ -16,6 +17,8 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const assistantAvatar = activeMentor === 'hermione' ? '/hermione.jpg' : '/naruminho.jpg';
 
   // Simple Markdown Parser
   const renderContent = (content: string) => {
@@ -87,9 +90,20 @@ export const MessageBubble: React.FC<MessageBubbleProps> = ({ message }) => {
             ? 'bg-indigo-600' 
             : message.isError 
               ? 'bg-red-500' 
-              : 'bg-gradient-to-br from-purple-600 to-indigo-600'
+              : 'bg-gradient-to-br from-purple-600 to-indigo-600 overflow-hidden'
         }`}>
-          {isUser ? <User size={16} className="text-white" /> : message.isError ? <AlertCircle size={16} className="text-white" /> : <Bot size={16} className="text-white" />}
+          {isUser ? (
+            <User size={16} className="text-white" />
+          ) : message.isError ? (
+            <AlertCircle size={16} className="text-white" />
+          ) : (
+            <img 
+              src={assistantAvatar} 
+              alt={activeMentor === 'hermione' ? 'Hermione' : 'Naruminho'} 
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          )}
         </div>
 
         {/* Bubble Content */}
