@@ -473,7 +473,7 @@ const App: React.FC = () => {
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide bg-gradient-to-b from-red-950/50 via-slate-950/60 to-amber-950/40">
                   {selectedArchive.messages.map(msg => {
-                    const mentorForMsg = msg.mentor || activeMentor || 'hermione';
+                    const mentorForMsg = msg.mentor || 'hermione';
                     const mentorAvatar = mentorForMsg === 'hermione' ? '/hermione.jpg' : '/narumi.jpg';
                     const isUserMsg = msg.role === 'user';
                     const avatarSrc = isUserMsg ? '/lellinha.png' : mentorAvatar;
