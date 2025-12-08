@@ -473,10 +473,12 @@ const App: React.FC = () => {
                 </div>
                 <div className="flex-1 overflow-y-auto p-6 space-y-4 scrollbar-hide bg-gradient-to-b from-red-950/50 via-slate-950/60 to-amber-950/40">
                   {selectedArchive.messages.map(msg => {
-                    const mentorAvatar = (msg.mentor || 'hermione') === 'hermione' ? '/hermione.jpg' : '/narumi.jpg';
+                    const mentorForMsg = msg.mentor || activeMentor || 'hermione';
+                    const mentorAvatar = mentorForMsg === 'hermione' ? '/hermione.jpg' : '/narumi.jpg';
                     const isUserMsg = msg.role === 'user';
                     const avatarSrc = isUserMsg ? '/lellinha.png' : mentorAvatar;
-                    const avatarAlt = isUserMsg ? 'Lellinha' : (msg.mentor || 'hermione') === 'hermione' ? 'Hermione' : 'Naruminho';
+                    const avatarAlt = isUserMsg ? 'Lellinha' : mentorForMsg === 'hermione' ? 'Hermione' : 'Naruminho';
+                    const senderLabel = isUserMsg ? 'Lellinha' : avatarAlt;
 
                     return (
                       <div
@@ -500,7 +502,7 @@ const App: React.FC = () => {
                                 : 'bg-red-900/40 border-amber-800/50 text-amber-100'
                           }`}>
                             <div className="text-[11px] font-semibold uppercase tracking-wide opacity-70 mb-2">
-                              {isUserMsg ? 'Lellinha' : 'Monitor'}
+                              {senderLabel}
                             </div>
                             <div className="whitespace-pre-wrap text-sm leading-relaxed">{msg.content}</div>
                             <div className="text-[10px] opacity-50 mt-2">
@@ -563,9 +565,16 @@ const App: React.FC = () => {
 
         {/* User Profile */}
         <div className="p-4 border-t border-[#3a1c23] space-y-3 bg-[#1c0f16]">
-           <div className="bg-[#241219] rounded-xl p-3 border border-[#3a1c23]">
+          <div className="bg-[#241219] rounded-xl p-3 border border-[#3a1c23]">
              <div className="flex items-center gap-3 mb-3">
-               <div className="w-9 h-9 rounded-full bg-[#5a2a2f] flex items-center justify-center text-sm font-bold shadow-md ring-2 ring-[#1c0f16] text-[#f5ebce]">L</div>
+               <div className="w-9 h-9 rounded-full overflow-hidden bg-[#5a2a2f] shadow-md ring-2 ring-[#1c0f16]">
+                 <img 
+                   src="/lellinha.png" 
+                   alt="Lellinha" 
+                   className="w-full h-full object-cover" 
+                   loading="lazy"
+                 />
+               </div>
                <div className="flex-1 min-w-0">
                  <p className="text-sm font-bold text-[#f1e7c8] truncate">Lellinha</p>
                  <p className="text-[10px] text-[#cbbf95]">Nível {userProgress.level} • {userProgress.xp} XP</p>
